@@ -7,15 +7,8 @@ import (
 	"fmt"
 	"io/ioutil"
 	"log"
-	"math/rand"
 	"net/http"
-	"time"
 )
-
-func RandomIntInRange(min, max int) int {
-	rand.Seed(time.Now().UnixNano())
-	return rand.Intn(max-min+1) + min
-}
 
 func GetFromAzure(url, token string, v interface{}) {
 	log.Println(fmt.Sprintf("Requesting GET from %s", url))
@@ -28,34 +21,6 @@ func GetFromAzure(url, token string, v interface{}) {
 	}
 
 	sendRequest(req, token, v)
-
-	/*
-		// Add authorization header to request
-		req.Header.Add("Authorization", "Basic "+basicAuth("", token))
-		req.Header.Add("Accept", "application/json;odata=verbose")
-
-		client := &http.Client{}
-
-		resp, err := client.Do(req)
-		if err != nil {
-			log.Fatal("Do: ", err)
-			return
-		}
-
-		defer resp.Body.Close()
-
-		log.Println(fmt.Sprintf("Received response code %d", resp.StatusCode))
-
-		if resp.StatusCode != http.StatusOK {
-			return
-		}
-
-		body, err := ioutil.ReadAll(resp.Body)
-		log.Println(fmt.Sprintf("Received response body %s", string(body)))
-
-		if err := json.Unmarshal([]byte(body), &v); err != nil {
-			log.Println(err)
-		}*/
 }
 
 func PostToAzure(url, token, body string, v interface{}) {
