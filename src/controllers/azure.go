@@ -202,29 +202,15 @@ func (c *AzureController) GetMemberWorkItems(ctx *gin.Context) {
 		return
 	}
 
-	// Create url for calling azure api
-	url := strings.Replace(azureMemberTasks, organizationPlaceholder, orgName, -1)
-	url = strings.Replace(url, projectIdPlaceholder, projectId, -1)
-	url = strings.Replace(url, teamIdPlaceholder, teamId, -1)
-
-	userEmail := "egin@databriz.ru" // TODO Get from db
-
-	requestBody := `{"query":"` + memberTasksWiql + `"}`
-	requestBody = strings.Replace(requestBody, userEmailPlaceholder, userEmail, -1)
-	requestBody = strings.Replace(requestBody, iterationPlaceholder, iteration, -1)
-
-	// Call Azure API
-	var wiqlResponse *azure.WiqlWorkItemsResponse
-	utils.PostToAzure(url, token, []byte(requestBody), &wiqlResponse)
-
-	if wiqlResponse == nil {
+	workItemsWiql, err := interactor.GetWorkItemsByWiql(projectId, teamId, "egin@databriz.ru", iteration)
+	if err != nil {
 		httputil.NewInternalAzureError(ctx)
 		return
 	}
 
 	// Request detailed works
-	var newList = make([]int, len(wiqlResponse.WorkItems))
-	for index, element := range wiqlResponse.WorkItems {
+	var newList = make([]int, len(workItemsWiql.WorkItems))
+	for index, element := range workItemsWiql.WorkItems {
 		newList[index] = element.ID
 	}
 
