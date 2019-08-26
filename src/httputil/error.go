@@ -1,6 +1,9 @@
 package httputil
 
-import "github.com/gin-gonic/gin"
+import (
+	"github.com/gin-gonic/gin"
+	"net/http"
+)
 
 func NewError(ctx *gin.Context, status int, err string) {
 	er := HTTPError{
@@ -8,6 +11,10 @@ func NewError(ctx *gin.Context, status int, err string) {
 		Message:    err,
 	}
 	ctx.JSON(status, er)
+}
+
+func NewInternalAzureError(ctx *gin.Context) {
+	NewError(ctx, http.StatusInternalServerError, "Error while requesting data from Azure")
 }
 
 type HTTPError struct {

@@ -6,7 +6,6 @@ import (
 	"../models"
 	"../models/azure"
 	"../utils"
-
 	"github.com/gin-gonic/gin"
 	"github.com/spf13/viper"
 	"net/http"
@@ -29,14 +28,23 @@ const (
 	memberTasksWiql = "select [System.Id] from WorkItems where [System.TeamProject] = @project and [System.AssignedTo] = '" + userEmailPlaceholder + "' and [System.IterationPath] = '" + iterationPlaceholder + "' order by [System.ChangedDate] desc"
 )
 
+// TODO Remove interacting with azure from controller
 var orgName string
 var token string
+
+var interactor utils.AzureInteractor
 
 type AzureController struct{}
 
 func NewAzureController() *AzureController {
+
 	orgName = viper.GetString(config.AzureOrganization)
 	token = viper.GetString(config.AzureToken)
+
+	interactor = utils.AzureInteractor{
+		OrganizationName: viper.GetString(config.AzureOrganization),
+		AuthToken:        viper.GetString(config.AzureToken),
+	}
 
 	return &AzureController{}
 }
@@ -57,7 +65,7 @@ func (c *AzureController) GetProjectsList(ctx *gin.Context) {
 	utils.GetFromAzure(url, token, &projects)
 
 	if projects == nil {
-		httputil.NewError(ctx, http.StatusInternalServerError, "Error while requesting data from Azure")
+		httputil.NewInternalAzureError(ctx)
 		return
 	}
 
@@ -90,7 +98,7 @@ func (c *AzureController) GetProjectTeams(ctx *gin.Context) {
 	utils.GetFromAzure(url, token, &teams)
 
 	if teams == nil {
-		httputil.NewError(ctx, http.StatusInternalServerError, "Error while requesting data from Azure")
+		httputil.NewInternalAzureError(ctx)
 		return
 	}
 
@@ -126,7 +134,7 @@ func (c *AzureController) GetTeamIterations(ctx *gin.Context) {
 	utils.GetFromAzure(url, token, &iterations)
 
 	if iterations == nil {
-		httputil.NewError(ctx, http.StatusInternalServerError, "Error while requesting data from Azure")
+		httputil.NewInternalAzureError(ctx)
 		return
 	}
 
@@ -162,7 +170,7 @@ func (c *AzureController) GetTeamMembers(ctx *gin.Context) {
 	utils.GetFromAzure(url, token, &members)
 
 	if members == nil {
-		httputil.NewError(ctx, http.StatusInternalServerError, "Error while requesting data from Azure")
+		httputil.NewInternalAzureError(ctx)
 		return
 	}
 
@@ -172,8 +180,19 @@ func (c *AzureController) GetTeamMembers(ctx *gin.Context) {
 	ctx.JSON(http.StatusOK, result)
 }
 
+// @Summary Задачи определенного участника команды
+// @Tags Azure
+// @Produce json
+// @Param projectId path string true "Project Id"
+// @Param teamId path string true "Team Id"
+// @Param userId query string true "User Id"
+// @Param iteration query string true "Iteration Name"
+// @Success 200 {object} azure.WorkItemsResponse
+// @Failure 400 {object} httputil.HTTPError "When user has not provided projectId or teamId parameter"
+// @Failure 500 {object} httputil.HTTPError "When failed to receive data from Azure"
+// @Router /api/v1/azure/getMemberWorkItems/{projectId}/{teamId} [get]
 func (c *AzureController) GetMemberWorkItems(ctx *gin.Context) {
-	/*projectId := ctx.Param("projectId")
+	projectId := ctx.Param("projectId")
 	teamId := ctx.Param("teamId")
 	userId := ctx.Query("userId")
 	iteration := ctx.Query("iteration")
@@ -194,14 +213,12 @@ func (c *AzureController) GetMemberWorkItems(ctx *gin.Context) {
 	requestBody = strings.Replace(requestBody, userEmailPlaceholder, userEmail, -1)
 	requestBody = strings.Replace(requestBody, iterationPlaceholder, iteration, -1)
 
-	log.Println(requestBody)
-
 	// Call Azure API
 	var wiqlResponse *azure.WiqlWorkItemsResponse
-	utils.PostToAzure(url, token, requestBody, &wiqlResponse)
+	utils.PostToAzure(url, token, []byte(requestBody), &wiqlResponse)
 
 	if wiqlResponse == nil {
-		httputil.NewError(ctx, http.StatusInternalServerError, "Error while requesting data from Azure")
+		httputil.NewInternalAzureError(ctx)
 		return
 	}
 
@@ -211,8 +228,11 @@ func (c *AzureController) GetMemberWorkItems(ctx *gin.Context) {
 		newList[index] = element.ID
 	}
 
-	utils.GetWorkItemsDescription(newList)
+	workItems, err := interactor.GetWorkItemsDescription(projectId, newList)
+	if err != nil {
+		httputil.NewInternalAzureError(ctx)
+		return
+	}
 
-	ctx.JSON(http.StatusOK, wiqlResponse)*/
-
+	ctx.JSON(http.StatusOK, workItems)
 }

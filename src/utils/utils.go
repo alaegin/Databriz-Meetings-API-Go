@@ -23,11 +23,11 @@ func GetFromAzure(url, token string, v interface{}) {
 	sendRequest(req, token, v)
 }
 
-func PostToAzure(url, token, body string, v interface{}) {
+func PostToAzure(url, token string, body []byte, v interface{}) {
 	log.Println(fmt.Sprintf("Sending POST to %s", url))
 
 	// Build the request
-	bodyReader := bytes.NewBuffer([]byte(body))
+	bodyReader := bytes.NewBuffer(body)
 	req, err := http.NewRequest("POST", url, bodyReader)
 	if err != nil {
 		log.Fatal("NewRequest: ", err)
