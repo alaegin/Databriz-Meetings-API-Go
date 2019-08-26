@@ -1,0 +1,344 @@
+{
+    "swagger": "2.0",
+    "info": {
+        "description": "Created by mobile developers",
+        "title": "Databriz Meetings Api",
+        "contact": {},
+        "license": {},
+        "version": "0.1"
+    },
+    "paths": {
+        "/api/v1/azure/getProjectTeams/{projectId}": {
+            "get": {
+                "description": "Возвращает список команд проекта",
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Azure"
+                ],
+                "summary": "Список команд",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "Project Id",
+                        "name": "projectId",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/azure.TeamsList"
+                        }
+                    },
+                    "400": {
+                        "description": "When user has not provided projectId parameter",
+                        "schema": {
+                            "$ref": "#/definitions/httputil.HTTPError"
+                        }
+                    },
+                    "500": {
+                        "description": "When failed to receive data from Azure",
+                        "schema": {
+                            "$ref": "#/definitions/httputil.HTTPError"
+                        }
+                    }
+                }
+            }
+        },
+        "/api/v1/azure/getProjects": {
+            "get": {
+                "description": "Возвращает список проектов организации",
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Azure"
+                ],
+                "summary": "Список проектов",
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/azure.ProjectsList"
+                        }
+                    },
+                    "500": {
+                        "description": "When failed to receive data from Azure",
+                        "schema": {
+                            "$ref": "#/definitions/httputil.HTTPError"
+                        }
+                    }
+                }
+            }
+        },
+        "/api/v1/azure/getTeamIterations/{projectId}/{teamId}": {
+            "get": {
+                "description": "Возвращает список спринтов команды",
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Azure"
+                ],
+                "summary": "Список спринтов команды",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "Project Id",
+                        "name": "projectId",
+                        "in": "path",
+                        "required": true
+                    },
+                    {
+                        "type": "string",
+                        "description": "Team Id",
+                        "name": "teamId",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/azure.IterationsList"
+                        }
+                    },
+                    "400": {
+                        "description": "When user has not provided projectId or teamId parameter",
+                        "schema": {
+                            "$ref": "#/definitions/httputil.HTTPError"
+                        }
+                    },
+                    "500": {
+                        "description": "When failed to receive data from Azure",
+                        "schema": {
+                            "$ref": "#/definitions/httputil.HTTPError"
+                        }
+                    }
+                }
+            }
+        },
+        "/api/v1/azure/getTeamMembers/{projectId}/{teamId}": {
+            "get": {
+                "description": "Возвращает список участников команды проекта",
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Azure"
+                ],
+                "summary": "Список участников команды",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "description": "Project Id",
+                        "name": "projectId",
+                        "in": "path",
+                        "required": true
+                    },
+                    {
+                        "type": "string",
+                        "description": "Team Id",
+                        "name": "teamId",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/models.MembersList"
+                        }
+                    },
+                    "400": {
+                        "description": "When user has not provided projectId or teamId parameter",
+                        "schema": {
+                            "$ref": "#/definitions/httputil.HTTPError"
+                        }
+                    },
+                    "500": {
+                        "description": "When failed to receive data from Azure",
+                        "schema": {
+                            "$ref": "#/definitions/httputil.HTTPError"
+                        }
+                    }
+                }
+            }
+        }
+    },
+    "definitions": {
+        "azure.Iteration": {
+            "type": "object",
+            "properties": {
+                "attributes": {
+                    "type": "object",
+                    "$ref": "#/definitions/azure.IterationAttributes"
+                },
+                "id": {
+                    "type": "string"
+                },
+                "name": {
+                    "type": "string"
+                },
+                "path": {
+                    "type": "string"
+                },
+                "url": {
+                    "type": "string"
+                }
+            }
+        },
+        "azure.IterationAttributes": {
+            "type": "object",
+            "properties": {
+                "finishDate": {
+                    "type": "string"
+                },
+                "startDate": {
+                    "type": "string"
+                },
+                "timeFrame": {
+                    "type": "string"
+                }
+            }
+        },
+        "azure.IterationsList": {
+            "type": "object",
+            "properties": {
+                "count": {
+                    "type": "integer"
+                },
+                "value": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/azure.Iteration"
+                    }
+                }
+            }
+        },
+        "azure.Project": {
+            "type": "object",
+            "properties": {
+                "id": {
+                    "type": "string"
+                },
+                "lastUpdateTime": {
+                    "type": "string"
+                },
+                "name": {
+                    "type": "string"
+                },
+                "revision": {
+                    "type": "integer"
+                },
+                "state": {
+                    "type": "string"
+                },
+                "url": {
+                    "type": "string"
+                },
+                "visibility": {
+                    "type": "string"
+                }
+            }
+        },
+        "azure.ProjectsList": {
+            "type": "object",
+            "properties": {
+                "count": {
+                    "type": "integer"
+                },
+                "value": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/azure.Project"
+                    }
+                }
+            }
+        },
+        "azure.Team": {
+            "type": "object",
+            "properties": {
+                "description": {
+                    "type": "string"
+                },
+                "id": {
+                    "type": "string"
+                },
+                "identityUrl": {
+                    "type": "string"
+                },
+                "name": {
+                    "type": "string"
+                },
+                "projectId": {
+                    "type": "string"
+                },
+                "projectName": {
+                    "type": "string"
+                },
+                "url": {
+                    "type": "string"
+                }
+            }
+        },
+        "azure.TeamsList": {
+            "type": "object",
+            "properties": {
+                "count": {
+                    "type": "integer"
+                },
+                "value": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/azure.Team"
+                    }
+                }
+            }
+        },
+        "httputil.HTTPError": {
+            "type": "object",
+            "properties": {
+                "message": {
+                    "type": "string",
+                    "example": "status bad request"
+                },
+                "status_code": {
+                    "type": "integer",
+                    "example": 400
+                }
+            }
+        },
+        "models.Member": {
+            "type": "object",
+            "properties": {
+                "email": {
+                    "type": "string"
+                },
+                "id": {
+                    "type": "string"
+                },
+                "name": {
+                    "type": "string"
+                }
+            }
+        },
+        "models.MembersList": {
+            "type": "object",
+            "properties": {
+                "members": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/models.Member"
+                    }
+                }
+            }
+        }
+    }
+}

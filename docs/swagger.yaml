@@ -1,0 +1,226 @@
+definitions:
+  azure.Iteration:
+    properties:
+      attributes:
+        $ref: '#/definitions/azure.IterationAttributes'
+        type: object
+      id:
+        type: string
+      name:
+        type: string
+      path:
+        type: string
+      url:
+        type: string
+    type: object
+  azure.IterationAttributes:
+    properties:
+      finishDate:
+        type: string
+      startDate:
+        type: string
+      timeFrame:
+        type: string
+    type: object
+  azure.IterationsList:
+    properties:
+      count:
+        type: integer
+      value:
+        items:
+          $ref: '#/definitions/azure.Iteration'
+        type: array
+    type: object
+  azure.Project:
+    properties:
+      id:
+        type: string
+      lastUpdateTime:
+        type: string
+      name:
+        type: string
+      revision:
+        type: integer
+      state:
+        type: string
+      url:
+        type: string
+      visibility:
+        type: string
+    type: object
+  azure.ProjectsList:
+    properties:
+      count:
+        type: integer
+      value:
+        items:
+          $ref: '#/definitions/azure.Project'
+        type: array
+    type: object
+  azure.Team:
+    properties:
+      description:
+        type: string
+      id:
+        type: string
+      identityUrl:
+        type: string
+      name:
+        type: string
+      projectId:
+        type: string
+      projectName:
+        type: string
+      url:
+        type: string
+    type: object
+  azure.TeamsList:
+    properties:
+      count:
+        type: integer
+      value:
+        items:
+          $ref: '#/definitions/azure.Team'
+        type: array
+    type: object
+  httputil.HTTPError:
+    properties:
+      message:
+        example: status bad request
+        type: string
+      status_code:
+        example: 400
+        type: integer
+    type: object
+  models.Member:
+    properties:
+      email:
+        type: string
+      id:
+        type: string
+      name:
+        type: string
+    type: object
+  models.MembersList:
+    properties:
+      members:
+        items:
+          $ref: '#/definitions/models.Member'
+        type: array
+    type: object
+info:
+  contact: {}
+  description: Created by mobile developers
+  license: {}
+  title: Databriz Meetings Api
+  version: "0.1"
+paths:
+  /api/v1/azure/getProjectTeams/{projectId}:
+    get:
+      description: Возвращает список команд проекта
+      parameters:
+      - description: Project Id
+        in: path
+        name: projectId
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/azure.TeamsList'
+        "400":
+          description: When user has not provided projectId parameter
+          schema:
+            $ref: '#/definitions/httputil.HTTPError'
+        "500":
+          description: When failed to receive data from Azure
+          schema:
+            $ref: '#/definitions/httputil.HTTPError'
+      summary: Список команд
+      tags:
+      - Azure
+  /api/v1/azure/getProjects:
+    get:
+      description: Возвращает список проектов организации
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/azure.ProjectsList'
+        "500":
+          description: When failed to receive data from Azure
+          schema:
+            $ref: '#/definitions/httputil.HTTPError'
+      summary: Список проектов
+      tags:
+      - Azure
+  /api/v1/azure/getTeamIterations/{projectId}/{teamId}:
+    get:
+      description: Возвращает список спринтов команды
+      parameters:
+      - description: Project Id
+        in: path
+        name: projectId
+        required: true
+        type: string
+      - description: Team Id
+        in: path
+        name: teamId
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/azure.IterationsList'
+        "400":
+          description: When user has not provided projectId or teamId parameter
+          schema:
+            $ref: '#/definitions/httputil.HTTPError'
+        "500":
+          description: When failed to receive data from Azure
+          schema:
+            $ref: '#/definitions/httputil.HTTPError'
+      summary: Список спринтов команды
+      tags:
+      - Azure
+  /api/v1/azure/getTeamMembers/{projectId}/{teamId}:
+    get:
+      description: Возвращает список участников команды проекта
+      parameters:
+      - description: Project Id
+        in: path
+        name: projectId
+        required: true
+        type: string
+      - description: Team Id
+        in: path
+        name: teamId
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/models.MembersList'
+        "400":
+          description: When user has not provided projectId or teamId parameter
+          schema:
+            $ref: '#/definitions/httputil.HTTPError'
+        "500":
+          description: When failed to receive data from Azure
+          schema:
+            $ref: '#/definitions/httputil.HTTPError'
+      summary: Список участников команды
+      tags:
+      - Azure
+swagger: "2.0"
