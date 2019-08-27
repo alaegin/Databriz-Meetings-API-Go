@@ -4,7 +4,6 @@ import (
 	_ "./docs"
 	"./src/config"
 	"./src/controllers"
-	"./src/db"
 	"fmt"
 	"github.com/gin-gonic/gin"
 	swaggerFiles "github.com/swaggo/files"
@@ -17,7 +16,7 @@ import (
 // @Version 0.1
 func main() {
 	config.LoadConfig()
-	db.InitDatabase()
+	//db.InitDatabase()
 	configureRoutes()
 }
 
