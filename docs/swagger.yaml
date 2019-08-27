@@ -158,9 +158,9 @@ paths:
         name: teamId
         required: true
         type: string
-      - description: User Id
+      - description: User Email
         in: query
-        name: userId
+        name: userEmail
         required: true
         type: string
       - description: Iteration Name

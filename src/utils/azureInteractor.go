@@ -73,7 +73,12 @@ func (i *AzureInteractor) GetWorkItemsDescription(projectId string, workItemsIds
 		Fields: []string{
 			"System.Title",
 			"System.WorkItemType",
+			"System.State",
 			"System.Reason",
+			"System.CreatedDate",
+			"Microsoft.VSTS.Scheduling.OriginalEstimate",
+			"Microsoft.VSTS.Scheduling.CompletedWork",
+			"Microsoft.VSTS.Common.Priority",
 		},
 	})
 	if err != nil {

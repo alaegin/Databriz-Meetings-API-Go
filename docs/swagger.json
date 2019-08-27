@@ -34,8 +34,8 @@
                     },
                     {
                         "type": "string",
-                        "description": "User Id",
-                        "name": "userId",
+                        "description": "User Email",
+                        "name": "userEmail",
                         "in": "query",
                         "required": true
                     },

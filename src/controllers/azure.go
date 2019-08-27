@@ -16,16 +16,11 @@ const (
 	organizationPlaceholder string = "{organization}"
 	projectIdPlaceholder    string = "{projectId}"
 	teamIdPlaceholder       string = "{teamId}"
-	userEmailPlaceholder    string = "{email}"
-	iterationPlaceholder    string = "{iteration}"
 
 	azureProjectsUrl     = "https://dev.azure.com/" + organizationPlaceholder + "/_apis/projects?api-version=5.1"
 	azureProjectTeamsUrl = "https://dev.azure.com/" + organizationPlaceholder + "/_apis/projects/" + projectIdPlaceholder + "/teams?api-version=5.0"
 	azureTeamMembers     = "https://dev.azure.com/" + organizationPlaceholder + "/_apis/projects/" + projectIdPlaceholder + "/teams/" + teamIdPlaceholder + "/members?api-version=5.1"
 	azureTeamIterations  = "https://dev.azure.com/" + organizationPlaceholder + "/" + projectIdPlaceholder + "/" + teamIdPlaceholder + "/_apis/work/teamsettings/iterations?api-version=5.1"
-	azureMemberTasks     = "https://dev.azure.com/" + organizationPlaceholder + "/" + projectIdPlaceholder + "/" + teamIdPlaceholder + "/_apis/wit/wiql?api-version=5.1"
-
-	memberTasksWiql = "select [System.Id] from WorkItems where [System.TeamProject] = @project and [System.AssignedTo] = '" + userEmailPlaceholder + "' and [System.IterationPath] = '" + iterationPlaceholder + "' order by [System.ChangedDate] desc"
 )
 
 // TODO Remove interacting with azure from controller
@@ -185,7 +180,7 @@ func (c *AzureController) GetTeamMembers(ctx *gin.Context) {
 // @Produce json
 // @Param projectId path string true "Project Id"
 // @Param teamId path string true "Team Id"
-// @Param userId query string true "User Id"
+// @Param userEmail query string true "User Email"
 // @Param iteration query string true "Iteration Name"
 // @Success 200 {object} azure.WorkItemsResponse
 // @Failure 400 {object} httputil.HTTPError "When user has not provided projectId or teamId parameter"
@@ -194,15 +189,15 @@ func (c *AzureController) GetTeamMembers(ctx *gin.Context) {
 func (c *AzureController) GetMemberWorkItems(ctx *gin.Context) {
 	projectId := ctx.Param("projectId")
 	teamId := ctx.Param("teamId")
-	userId := ctx.Query("userId")
+	userEmail := ctx.Query("userEmail")
 	iteration := ctx.Query("iteration")
 
-	if projectId == "" || teamId == "" || userId == "" || iteration == "" {
+	if projectId == "" || teamId == "" || userEmail == "" || iteration == "" {
 		httputil.NewError(ctx, http.StatusBadRequest, "projectId, teamId, userId, iteration must be provided")
 		return
 	}
 
-	workItemsWiql, err := interactor.GetWorkItemsByWiql(projectId, teamId, "egin@databriz.ru", iteration)
+	workItemsWiql, err := interactor.GetWorkItemsByWiql(projectId, teamId, userEmail, iteration)
 	if err != nil {
 		httputil.NewInternalAzureError(ctx)
 		return
