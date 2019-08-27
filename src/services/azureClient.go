@@ -6,19 +6,18 @@ import (
 )
 
 const (
-	AzureAPI = "https://dev.azure.com/"
+	azureAPI = "https://dev.azure.com/"
 )
 
 type Client struct {
-	sling *sling.Sling
-
+	Sling    *sling.Sling
 	Projects *ProjectsService
 }
 
 func NewClient(token string, organization string) *Client {
-	base := sling.New().Client(&http.Client{}).Base(AzureAPI).SetBasicAuth("", token)
+	base := sling.New().Client(&http.Client{}).Base(azureAPI).SetBasicAuth("", token)
 	return &Client{
-		sling:    base,
+		Sling:    base,
 		Projects: NewProjectsService(base.New(), organization),
 	}
 }
