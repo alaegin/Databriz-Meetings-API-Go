@@ -4,42 +4,21 @@ import (
 	"../config"
 	"../httputil"
 	"../models"
-	"../models/azure"
 	"../services"
 	"../utils"
 	"github.com/gin-gonic/gin"
 	"github.com/spf13/viper"
 	"net/http"
-	"strings"
 )
-
-const (
-	organizationPlaceholder string = "{organization}"
-	projectIdPlaceholder    string = "{projectId}"
-	teamIdPlaceholder       string = "{teamId}"
-
-	azureProjectsUrl     = "https://dev.azure.com/" + organizationPlaceholder + "/_apis/projects?api-version=5.1"
-	azureProjectTeamsUrl = "https://dev.azure.com/" + organizationPlaceholder + "/_apis/projects/" + projectIdPlaceholder + "/teams?api-version=5.0"
-	azureTeamMembers     = "https://dev.azure.com/" + organizationPlaceholder + "/_apis/projects/" + projectIdPlaceholder + "/teams/" + teamIdPlaceholder + "/members?api-version=5.1"
-	azureTeamIterations  = "https://dev.azure.com/" + organizationPlaceholder + "/" + projectIdPlaceholder + "/" + teamIdPlaceholder + "/_apis/work/teamsettings/iterations?api-version=5.1"
-)
-
-// TODO Remove interacting with azure from controller
-var orgName string
-var token string
 
 var interactor utils.AzureInteractor
-
-var client *services.Client
+var client *services.AzureClient
 
 type AzureController struct{}
 
 func NewAzureController() *AzureController {
 
-	orgName = viper.GetString(config.AzureOrganization)
-	token = viper.GetString(config.AzureToken)
-
-	client = services.NewClient(
+	client = services.NewAzureClient(
 		viper.GetString(config.AzureToken),
 		viper.GetString(config.AzureOrganization),
 	)
@@ -110,42 +89,6 @@ func getProjectTeams(ctx *gin.Context) {
 	ctx.JSON(http.StatusOK, models.FromAzureTeamsList(projectTeams))
 }
 
-// @Summary Список спринтов команды
-// @Description Возвращает список спринтов команды
-// @Tags Azure
-// @Produce json
-// @Param projectId path string true "Project Id"
-// @Param teamId path string true "Team Id"
-// @Success 200 {array} models.Iteration
-// @Failure 400 {object} httputil.HTTPError "When user has not provided projectId or teamId parameter"
-// @Failure 500 {object} httputil.HTTPError "When failed to receive data from Azure"
-// @Router /api/v1/azure/getTeamIterations/{projectId}/{teamId} [get]
-func getTeamIterations(ctx *gin.Context) {
-	projectId := ctx.Param("projectId")
-	teamId := ctx.Param("teamId")
-
-	if projectId == "" || teamId == "" {
-		httputil.NewError(ctx, http.StatusBadRequest, "projectId and teamId must be provided")
-		return
-	}
-
-	// Create url for calling azure api
-	url := strings.Replace(azureTeamIterations, organizationPlaceholder, orgName, -1)
-	url = strings.Replace(url, projectIdPlaceholder, projectId, -1)
-	url = strings.Replace(url, teamIdPlaceholder, teamId, -1)
-
-	// Call Azure API
-	var iterations *azure.IterationsList
-	utils.GetFromAzure(url, token, &iterations)
-
-	if iterations == nil {
-		httputil.NewInternalAzureError(ctx)
-		return
-	}
-
-	ctx.JSON(http.StatusOK, models.FromAzureIterations(iterations))
-}
-
 // @Summary Список участников команды
 // @Description Возвращает список участников команды проекта
 // @Tags Azure
@@ -165,24 +108,51 @@ func getTeamMembers(ctx *gin.Context) {
 		return
 	}
 
-	// Create url for calling azure api
-	url := strings.Replace(azureTeamMembers, organizationPlaceholder, orgName, -1)
-	url = strings.Replace(url, projectIdPlaceholder, projectId, -1)
-	url = strings.Replace(url, teamIdPlaceholder, teamId, -1)
+	teamMembers, _, err := client.Teams.TeamMembers(
+		projectId,
+		teamId,
+		&services.TeamsParams{ApiVersion: "5.1"},
+	)
 
-	// Call Azure API
-	var members *azure.MembersList
-	utils.GetFromAzure(url, token, &members)
-
-	if members == nil {
+	if err != nil {
 		httputil.NewInternalAzureError(ctx)
 		return
 	}
 
-	// Convert Azure response to own format
-	result := models.FromAzureMembersList(members)
+	ctx.JSON(http.StatusOK, models.FromAzureMembersList(teamMembers))
+}
 
-	ctx.JSON(http.StatusOK, result)
+// @Summary Список спринтов команды
+// @Description Возвращает список спринтов команды
+// @Tags Azure
+// @Produce json
+// @Param projectId path string true "Project Id"
+// @Param teamId path string true "Team Id"
+// @Success 200 {array} models.Iteration
+// @Failure 400 {object} httputil.HTTPError "When user has not provided projectId or teamId parameter"
+// @Failure 500 {object} httputil.HTTPError "When failed to receive data from Azure"
+// @Router /api/v1/azure/getTeamIterations/{projectId}/{teamId} [get]
+func getTeamIterations(ctx *gin.Context) {
+	projectId := ctx.Param("projectId")
+	teamId := ctx.Param("teamId")
+
+	if projectId == "" || teamId == "" {
+		httputil.NewError(ctx, http.StatusBadRequest, "projectId and teamId must be provided")
+		return
+	}
+
+	teamIterations, _, err := client.Teams.TeamIterations(
+		projectId,
+		teamId,
+		&services.TeamsParams{ApiVersion: "5.1"},
+	)
+
+	if err != nil {
+		httputil.NewInternalAzureError(ctx)
+		return
+	}
+
+	ctx.JSON(http.StatusOK, models.FromAzureIterations(teamIterations))
 }
 
 // @Summary Задачи определенного участника команды

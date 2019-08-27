@@ -12,7 +12,7 @@ type ProjectsService struct {
 	Sling *sling.Sling
 }
 
-func NewProjectsService(sling *sling.Sling, organization string) *ProjectsService {
+func newProjectsService(sling *sling.Sling, organization string) *ProjectsService {
 	return &ProjectsService{
 		Sling: sling.Path(fmt.Sprintf("%s/_apis/projects/", organization)),
 	}

@@ -9,15 +9,19 @@ const (
 	azureAPI = "https://dev.azure.com/"
 )
 
-type Client struct {
+type AzureClient struct {
 	Sling    *sling.Sling
 	Projects *ProjectsService
+	Teams    *TeamsService
 }
 
-func NewClient(token string, organization string) *Client {
-	base := sling.New().Client(&http.Client{}).Base(azureAPI).SetBasicAuth("", token)
-	return &Client{
+func NewAzureClient(token string, organization string) *AzureClient {
+	httpClient := &http.Client{}
+	base := sling.New().Client(httpClient).Base(azureAPI).SetBasicAuth("", token)
+
+	return &AzureClient{
 		Sling:    base,
-		Projects: NewProjectsService(base.New(), organization),
+		Projects: newProjectsService(base.New(), organization),
+		Teams:    newTeamsService(base.New(), organization),
 	}
 }
