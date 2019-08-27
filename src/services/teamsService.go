@@ -22,6 +22,7 @@ func newTeamsService(sling *sling.Sling, organization string) *TeamsService {
 	}
 }
 
+// Api reference - https://docs.microsoft.com/en-us/rest/api/azure/devops/core/teams/get%20team%20members%20with%20extended%20properties?view=azure-devops-rest-5.1
 func (s *TeamsService) TeamMembers(projectId, teamId string, params *TeamsParams) (*azure.MembersList, *http.Response, error) {
 	members := new(azure.MembersList)
 	apiError := new(httputil.APIError)
@@ -30,6 +31,7 @@ func (s *TeamsService) TeamMembers(projectId, teamId string, params *TeamsParams
 	return members, resp, httputil.RelevantError(err, apiError)
 }
 
+// Api reference - https://docs.microsoft.com/en-us/rest/api/azure/devops/work/iterations/list?view=azure-devops-rest-5.1
 func (s *TeamsService) TeamIterations(projectId, teamId string, params *TeamsParams) (*azure.IterationsList, *http.Response, error) {
 	iterations := new(azure.IterationsList)
 	apiError := new(httputil.APIError)

@@ -22,6 +22,7 @@ type ProjectsParams struct {
 	ApiVersion string `url:"api-version,omitempty"`
 }
 
+// Api reference - https://docs.microsoft.com/en-us/rest/api/azure/devops/core/projects/list?view=azure-devops-rest-5.1
 func (s *ProjectsService) Projects(params *ProjectsParams) (*azure.ProjectsList, *http.Response, error) {
 	projects := new(azure.ProjectsList)
 	apiError := new(httputil.APIError)
@@ -29,6 +30,7 @@ func (s *ProjectsService) Projects(params *ProjectsParams) (*azure.ProjectsList,
 	return projects, resp, httputil.RelevantError(err, apiError)
 }
 
+// Api reference - https://docs.microsoft.com/en-us/rest/api/azure/devops/core/teams/get%20teams?view=azure-devops-rest-5.1
 func (s *ProjectsService) ProjectTeams(projectId string, params *ProjectsParams) (*azure.TeamsList, *http.Response, error) {
 	projectTeams := new(azure.TeamsList)
 	apiError := new(httputil.APIError)
