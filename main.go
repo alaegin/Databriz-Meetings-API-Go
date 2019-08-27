@@ -30,14 +30,9 @@ func configureRoutes() {
 	api := router.Group("/api/v1")
 	{
 		azure := api.Group("/azure")
-		azureController := controllers.NewAzureController()
 		{
-			azure.GET("getProjects", azureController.GetProjectsList)
-			azure.GET("getProjectTeams/:projectId", azureController.GetProjectTeams)
-
-			azure.GET("getTeamMembers/:projectId/:teamId", azureController.GetTeamMembers)
-			azure.GET("getTeamIterations/:projectId/:teamId", azureController.GetTeamIterations)
-			azure.GET("getMemberWorkItems/:projectId/:teamId", azureController.GetMemberWorkItems)
+			azureController := controllers.NewAzureController()
+			azureController.RegisterRoutes(azure)
 		}
 	}
 
