@@ -5,6 +5,7 @@ import (
 	"../httputil"
 	"../models"
 	"../models/azure"
+	"../services"
 	"../utils"
 	"github.com/gin-gonic/gin"
 	"github.com/spf13/viper"
@@ -29,12 +30,19 @@ var token string
 
 var interactor utils.AzureInteractor
 
+var client *services.Client
+
 type AzureController struct{}
 
 func NewAzureController() *AzureController {
 
 	orgName = viper.GetString(config.AzureOrganization)
 	token = viper.GetString(config.AzureToken)
+
+	client = services.NewClient(
+		viper.GetString(config.AzureToken),
+		viper.GetString(config.AzureOrganization),
+	)
 
 	interactor = utils.AzureInteractor{
 		OrganizationName: viper.GetString(config.AzureOrganization),
@@ -52,18 +60,13 @@ func NewAzureController() *AzureController {
 // @Failure 500 {object} httputil.HTTPError "When failed to receive data from Azure"
 // @Router /api/v1/azure/getProjects [get]
 func (c *AzureController) GetProjectsList(ctx *gin.Context) {
-	// Create url for calling azure api
-	url := strings.Replace(azureProjectsUrl, organizationPlaceholder, orgName, -1)
-
-	// Call Azure API
-	var projects *azure.ProjectsList
-	utils.GetFromAzure(url, token, &projects)
-
-	if projects == nil {
+	projects, _, err := client.Projects.Projects(
+		&services.ProjectsParams{ApiVersion: "5.1"},
+	)
+	if err != nil {
 		httputil.NewInternalAzureError(ctx)
 		return
 	}
-
 	ctx.JSON(http.StatusOK, projects)
 }
 
@@ -84,20 +87,17 @@ func (c *AzureController) GetProjectTeams(ctx *gin.Context) {
 		return
 	}
 
-	// Create url for calling azure api
-	url := strings.Replace(azureProjectTeamsUrl, organizationPlaceholder, orgName, -1)
-	url = strings.Replace(url, projectIdPlaceholder, projectId, -1)
+	projectTeams, _, err := client.Projects.ProjectTeams(
+		projectId,
+		&services.ProjectsParams{ApiVersion: "5.0"},
+	)
 
-	// Call Azure API
-	var teams *azure.TeamsList
-	utils.GetFromAzure(url, token, &teams)
-
-	if teams == nil {
+	if err != nil {
 		httputil.NewInternalAzureError(ctx)
 		return
 	}
 
-	ctx.JSON(http.StatusOK, teams)
+	ctx.JSON(http.StatusOK, projectTeams)
 }
 
 // @Summary Список спринтов команды
