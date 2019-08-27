@@ -1,10 +1,6 @@
 package models
 
-import "../models/azure"
-
-type MembersList struct {
-	Members []Member `json:"members"`
-}
+import "./azure"
 
 type Member struct {
 	Id    string `json:"id"`
@@ -12,12 +8,12 @@ type Member struct {
 	Email string `json:"email"`
 }
 
-func FromAzureMembersList(list *azure.MembersList) *MembersList {
-	var newList = make([]Member, len(list.Members))
-	for index, element := range list.Members {
-		identity := element.Identity
-		newList[index] = Member{identity.ID, identity.DisplayName, identity.UniqueName}
+func FromAzureMembersList(azureList *azure.MembersList) *[]Member {
+	var list = make([]Member, len(azureList.Members))
+	for index, member := range azureList.Members {
+		identity := member.Identity
+		list[index] = Member{identity.ID, identity.DisplayName, identity.UniqueName}
 	}
 
-	return &MembersList{Members: newList}
+	return &list
 }

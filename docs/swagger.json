@@ -92,7 +92,10 @@
                     "200": {
                         "description": "OK",
                         "schema": {
-                            "$ref": "#/definitions/azure.TeamsList"
+                            "type": "array",
+                            "items": {
+                                "$ref": "#/definitions/models.Team"
+                            }
                         }
                     },
                     "400": {
@@ -124,7 +127,10 @@
                     "200": {
                         "description": "OK",
                         "schema": {
-                            "$ref": "#/definitions/azure.ProjectsList"
+                            "type": "array",
+                            "items": {
+                                "$ref": "#/definitions/models.Project"
+                            }
                         }
                     },
                     "500": {
@@ -166,7 +172,10 @@
                     "200": {
                         "description": "OK",
                         "schema": {
-                            "$ref": "#/definitions/azure.IterationsList"
+                            "type": "array",
+                            "items": {
+                                "$ref": "#/definitions/models.Iteration"
+                            }
                         }
                     },
                     "400": {
@@ -214,7 +223,10 @@
                     "200": {
                         "description": "OK",
                         "schema": {
-                            "$ref": "#/definitions/models.MembersList"
+                            "type": "array",
+                            "items": {
+                                "$ref": "#/definitions/models.Member"
+                            }
                         }
                     },
                     "400": {
@@ -245,135 +257,6 @@
                 },
                 "System.WorkItemType": {
                     "type": "string"
-                }
-            }
-        },
-        "azure.Iteration": {
-            "type": "object",
-            "properties": {
-                "attributes": {
-                    "type": "object",
-                    "$ref": "#/definitions/azure.IterationAttributes"
-                },
-                "id": {
-                    "type": "string"
-                },
-                "name": {
-                    "type": "string"
-                },
-                "path": {
-                    "type": "string"
-                },
-                "url": {
-                    "type": "string"
-                }
-            }
-        },
-        "azure.IterationAttributes": {
-            "type": "object",
-            "properties": {
-                "finishDate": {
-                    "type": "string"
-                },
-                "startDate": {
-                    "type": "string"
-                },
-                "timeFrame": {
-                    "type": "string"
-                }
-            }
-        },
-        "azure.IterationsList": {
-            "type": "object",
-            "properties": {
-                "count": {
-                    "type": "integer"
-                },
-                "value": {
-                    "type": "array",
-                    "items": {
-                        "$ref": "#/definitions/azure.Iteration"
-                    }
-                }
-            }
-        },
-        "azure.Project": {
-            "type": "object",
-            "properties": {
-                "id": {
-                    "type": "string"
-                },
-                "lastUpdateTime": {
-                    "type": "string"
-                },
-                "name": {
-                    "type": "string"
-                },
-                "revision": {
-                    "type": "integer"
-                },
-                "state": {
-                    "type": "string"
-                },
-                "url": {
-                    "type": "string"
-                },
-                "visibility": {
-                    "type": "string"
-                }
-            }
-        },
-        "azure.ProjectsList": {
-            "type": "object",
-            "properties": {
-                "count": {
-                    "type": "integer"
-                },
-                "value": {
-                    "type": "array",
-                    "items": {
-                        "$ref": "#/definitions/azure.Project"
-                    }
-                }
-            }
-        },
-        "azure.Team": {
-            "type": "object",
-            "properties": {
-                "description": {
-                    "type": "string"
-                },
-                "id": {
-                    "type": "string"
-                },
-                "identityUrl": {
-                    "type": "string"
-                },
-                "name": {
-                    "type": "string"
-                },
-                "projectId": {
-                    "type": "string"
-                },
-                "projectName": {
-                    "type": "string"
-                },
-                "url": {
-                    "type": "string"
-                }
-            }
-        },
-        "azure.TeamsList": {
-            "type": "object",
-            "properties": {
-                "count": {
-                    "type": "integer"
-                },
-                "value": {
-                    "type": "array",
-                    "items": {
-                        "$ref": "#/definitions/azure.Team"
-                    }
                 }
             }
         },
@@ -422,6 +305,29 @@
                 }
             }
         },
+        "models.Iteration": {
+            "type": "object",
+            "properties": {
+                "finishDate": {
+                    "type": "string"
+                },
+                "id": {
+                    "type": "string"
+                },
+                "name": {
+                    "type": "string"
+                },
+                "path": {
+                    "type": "string"
+                },
+                "startDate": {
+                    "type": "string"
+                },
+                "timeFrame": {
+                    "type": "string"
+                }
+            }
+        },
         "models.Member": {
             "type": "object",
             "properties": {
@@ -436,14 +342,28 @@
                 }
             }
         },
-        "models.MembersList": {
+        "models.Project": {
             "type": "object",
             "properties": {
-                "members": {
-                    "type": "array",
-                    "items": {
-                        "$ref": "#/definitions/models.Member"
-                    }
+                "id": {
+                    "type": "string"
+                },
+                "name": {
+                    "type": "string"
+                }
+            }
+        },
+        "models.Team": {
+            "type": "object",
+            "properties": {
+                "description": {
+                    "type": "string"
+                },
+                "id": {
+                    "type": "integer"
+                },
+                "name": {
+                    "type": "string"
                 }
             }
         }

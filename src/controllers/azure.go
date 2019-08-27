@@ -48,7 +48,7 @@ func NewAzureController() *AzureController {
 // @Description Возвращает список проектов организации
 // @Tags Azure
 // @Produce json
-// @Success 200 {object} azure.ProjectsList
+// @Success 200 {array} models.Project
 // @Failure 500 {object} httputil.HTTPError "When failed to receive data from Azure"
 // @Router /api/v1/azure/getProjects [get]
 func (c *AzureController) GetProjectsList(ctx *gin.Context) {
@@ -64,7 +64,7 @@ func (c *AzureController) GetProjectsList(ctx *gin.Context) {
 		return
 	}
 
-	ctx.JSON(http.StatusOK, projects)
+	ctx.JSON(http.StatusOK, models.FromAzureProjectsList(projects))
 }
 
 // @Summary Список команд
@@ -72,7 +72,7 @@ func (c *AzureController) GetProjectsList(ctx *gin.Context) {
 // @Tags Azure
 // @Produce json
 // @Param projectId path string true "Project Id"
-// @Success 200 {object} azure.TeamsList
+// @Success 200 {array} models.Team
 // @Failure 400 {object} httputil.HTTPError "When user has not provided projectId parameter"
 // @Failure 500 {object} httputil.HTTPError "When failed to receive data from Azure"
 // @Router /api/v1/azure/getProjectTeams/{projectId} [get]
@@ -97,7 +97,7 @@ func (c *AzureController) GetProjectTeams(ctx *gin.Context) {
 		return
 	}
 
-	ctx.JSON(http.StatusOK, teams)
+	ctx.JSON(http.StatusOK, models.FromAzureTeamsList(teams))
 }
 
 // @Summary Список спринтов команды
@@ -106,7 +106,7 @@ func (c *AzureController) GetProjectTeams(ctx *gin.Context) {
 // @Produce json
 // @Param projectId path string true "Project Id"
 // @Param teamId path string true "Team Id"
-// @Success 200 {object} azure.IterationsList
+// @Success 200 {array} models.Iteration
 // @Failure 400 {object} httputil.HTTPError "When user has not provided projectId or teamId parameter"
 // @Failure 500 {object} httputil.HTTPError "When failed to receive data from Azure"
 // @Router /api/v1/azure/getTeamIterations/{projectId}/{teamId} [get]
@@ -133,7 +133,7 @@ func (c *AzureController) GetTeamIterations(ctx *gin.Context) {
 		return
 	}
 
-	ctx.JSON(http.StatusOK, iterations)
+	ctx.JSON(http.StatusOK, models.FromAzureIterations(iterations))
 }
 
 // @Summary Список участников команды
@@ -142,7 +142,7 @@ func (c *AzureController) GetTeamIterations(ctx *gin.Context) {
 // @Produce json
 // @Param projectId path string true "Project Id"
 // @Param teamId path string true "Team Id"
-// @Success 200 {object} models.MembersList
+// @Success 200 {array} models.Member
 // @Failure 400 {object} httputil.HTTPError "When user has not provided projectId or teamId parameter"
 // @Failure 500 {object} httputil.HTTPError "When failed to receive data from Azure"
 // @Router /api/v1/azure/getTeamMembers/{projectId}/{teamId} [get]

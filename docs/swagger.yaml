@@ -8,90 +8,6 @@ definitions:
       System.WorkItemType:
         type: string
     type: object
-  azure.Iteration:
-    properties:
-      attributes:
-        $ref: '#/definitions/azure.IterationAttributes'
-        type: object
-      id:
-        type: string
-      name:
-        type: string
-      path:
-        type: string
-      url:
-        type: string
-    type: object
-  azure.IterationAttributes:
-    properties:
-      finishDate:
-        type: string
-      startDate:
-        type: string
-      timeFrame:
-        type: string
-    type: object
-  azure.IterationsList:
-    properties:
-      count:
-        type: integer
-      value:
-        items:
-          $ref: '#/definitions/azure.Iteration'
-        type: array
-    type: object
-  azure.Project:
-    properties:
-      id:
-        type: string
-      lastUpdateTime:
-        type: string
-      name:
-        type: string
-      revision:
-        type: integer
-      state:
-        type: string
-      url:
-        type: string
-      visibility:
-        type: string
-    type: object
-  azure.ProjectsList:
-    properties:
-      count:
-        type: integer
-      value:
-        items:
-          $ref: '#/definitions/azure.Project'
-        type: array
-    type: object
-  azure.Team:
-    properties:
-      description:
-        type: string
-      id:
-        type: string
-      identityUrl:
-        type: string
-      name:
-        type: string
-      projectId:
-        type: string
-      projectName:
-        type: string
-      url:
-        type: string
-    type: object
-  azure.TeamsList:
-    properties:
-      count:
-        type: integer
-      value:
-        items:
-          $ref: '#/definitions/azure.Team'
-        type: array
-    type: object
   azure.WorkItem:
     properties:
       fields:
@@ -122,6 +38,21 @@ definitions:
         example: 400
         type: integer
     type: object
+  models.Iteration:
+    properties:
+      finishDate:
+        type: string
+      id:
+        type: string
+      name:
+        type: string
+      path:
+        type: string
+      startDate:
+        type: string
+      timeFrame:
+        type: string
+    type: object
   models.Member:
     properties:
       email:
@@ -131,12 +62,21 @@ definitions:
       name:
         type: string
     type: object
-  models.MembersList:
+  models.Project:
     properties:
-      members:
-        items:
-          $ref: '#/definitions/models.Member'
-        type: array
+      id:
+        type: string
+      name:
+        type: string
+    type: object
+  models.Team:
+    properties:
+      description:
+        type: string
+      id:
+        type: integer
+      name:
+        type: string
     type: object
 info:
   contact: {}
@@ -201,7 +141,9 @@ paths:
         "200":
           description: OK
           schema:
-            $ref: '#/definitions/azure.TeamsList'
+            items:
+              $ref: '#/definitions/models.Team'
+            type: array
         "400":
           description: When user has not provided projectId parameter
           schema:
@@ -222,7 +164,9 @@ paths:
         "200":
           description: OK
           schema:
-            $ref: '#/definitions/azure.ProjectsList'
+            items:
+              $ref: '#/definitions/models.Project'
+            type: array
         "500":
           description: When failed to receive data from Azure
           schema:
@@ -250,7 +194,9 @@ paths:
         "200":
           description: OK
           schema:
-            $ref: '#/definitions/azure.IterationsList'
+            items:
+              $ref: '#/definitions/models.Iteration'
+            type: array
         "400":
           description: When user has not provided projectId or teamId parameter
           schema:
@@ -282,7 +228,9 @@ paths:
         "200":
           description: OK
           schema:
-            $ref: '#/definitions/models.MembersList'
+            items:
+              $ref: '#/definitions/models.Member'
+            type: array
         "400":
           description: When user has not provided projectId or teamId parameter
           schema:
