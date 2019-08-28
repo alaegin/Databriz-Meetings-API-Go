@@ -18,21 +18,23 @@ func newProjectsService(sling *sling.Sling, organization string) *ProjectsServic
 	}
 }
 
-type ProjectsParams struct {
-	ApiVersion string `url:"api-version,omitempty"`
-}
+type ProjectsParams struct{}
 
 // Api reference - https://docs.microsoft.com/en-us/rest/api/azure/devops/core/projects/list?view=azure-devops-rest-5.1
 func (s *ProjectsService) Projects(params *ProjectsParams) (*azure.ProjectsList, *http.Response, error) {
 	projects := new(azure.ProjectsList)
-	resp, err := s.sling.New().Get("").QueryStruct(params).ReceiveSuccess(projects)
+	resp, err := s.sling.New().Get("").ReceiveSuccess(projects)
 	return projects, resp, httputil.RelevantError(err, resp)
 }
 
+type ProjectTeamsParams struct {
+	ProjectId string
+}
+
 // Api reference - https://docs.microsoft.com/en-us/rest/api/azure/devops/core/teams/get%20teams?view=azure-devops-rest-5.1
-func (s *ProjectsService) ProjectTeams(projectId string, params *ProjectsParams) (*azure.TeamsList, *http.Response, error) {
+func (s *ProjectsService) ProjectTeams(params *ProjectTeamsParams) (*azure.TeamsList, *http.Response, error) {
 	projectTeams := new(azure.TeamsList)
-	path := fmt.Sprintf("%s/teams", projectId)
-	resp, err := s.sling.New().Get(path).QueryStruct(params).ReceiveSuccess(projectTeams)
+	path := fmt.Sprintf("%s/teams", params.ProjectId)
+	resp, err := s.sling.New().Get(path).ReceiveSuccess(projectTeams)
 	return projectTeams, resp, httputil.RelevantError(err, resp)
 }

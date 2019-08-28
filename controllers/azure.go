@@ -43,7 +43,7 @@ func (c *AzureController) RegisterRoutes(router *gin.RouterGroup) {
 // @Router /v1/azure/projects/list [get]
 func (AzureController) getProjectsList(ctx *gin.Context) {
 	projects, _, err := client.Projects.Projects(
-		&services.ProjectsParams{ApiVersion: "5.1"},
+		&services.ProjectsParams{},
 	)
 	if err != nil {
 		httputil.NewInternalAzureError(ctx, err)
@@ -71,8 +71,7 @@ func (AzureController) getProjectTeams(ctx *gin.Context) {
 	}
 
 	projectTeams, _, err := client.Projects.ProjectTeams(
-		projectId,
-		&services.ProjectsParams{ApiVersion: "5.0"},
+		&services.ProjectTeamsParams{ProjectId: projectId},
 	)
 
 	if err != nil {
@@ -103,9 +102,8 @@ func (AzureController) getTeamMembers(ctx *gin.Context) {
 	}
 
 	teamMembers, _, err := client.Teams.TeamMembers(
-		projectId,
-		teamId,
-		&services.TeamsParams{ApiVersion: "5.1"},
+		&services.TeamMembersParams{ProjectId: projectId,
+			TeamId: teamId},
 	)
 
 	if err != nil {
@@ -136,9 +134,8 @@ func (AzureController) getTeamIterations(ctx *gin.Context) {
 	}
 
 	teamIterations, _, err := client.Teams.TeamIterations(
-		projectId,
-		teamId,
-		&services.TeamsParams{ApiVersion: "5.1"},
+		&services.TeamIterationsParams{ProjectId: projectId,
+			TeamId: teamId},
 	)
 
 	if err != nil {
@@ -172,11 +169,10 @@ func (AzureController) getMemberWorkItems(ctx *gin.Context) {
 	}
 
 	workItems, err := client.WorkItems.MemberWorkItems(
-		projectId,
-		teamId,
-		iteration,
-		userEmail,
-		&services.WorkItemsParams{ApiVersion: "5.1"},
+		&services.MemberWorkItemsParams{ProjectId: projectId,
+			TeamId:    teamId,
+			Iteration: iteration,
+			UserEmail: userEmail},
 	)
 
 	if err != nil {

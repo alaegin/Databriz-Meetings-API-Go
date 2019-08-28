@@ -6,8 +6,13 @@ import (
 )
 
 const (
-	azureAPI = "https://dev.azure.com/"
+	azureAPI   = "https://dev.azure.com/"
+	apiVersion = "5.1"
 )
+
+type clientParams struct {
+	ApiVersion string `url:"api-version,omitempty"`
+}
 
 type AzureClient struct {
 	sling     *sling.Sling
@@ -18,8 +23,12 @@ type AzureClient struct {
 
 func NewAzureClient(token string, organization string) *AzureClient {
 	httpClient := &http.Client{}
-	base := sling.New().Client(httpClient).Base(azureAPI).SetBasicAuth("", token).
-		Set("Accept", "application/json")
+	base := sling.New().
+		Client(httpClient).
+		Base(azureAPI).
+		SetBasicAuth("", token).
+		Set("Accept", "application/json").
+		QueryStruct(clientParams{ApiVersion: apiVersion})
 
 	return &AzureClient{
 		sling:     base,

@@ -31,23 +31,26 @@ type WorkItemsService struct {
 	sling *sling.Sling
 }
 
-type WorkItemsParams struct {
-	ApiVersion string `url:"api-version,omitempty"`
-}
-
 func newWorkItemsService(sling *sling.Sling, organization string) *WorkItemsService {
 	return &WorkItemsService{
 		sling: sling.Path(fmt.Sprintf("%s/", organization)),
 	}
 }
 
-func (s *WorkItemsService) MemberWorkItems(projectId, teamId, iteration, userEmail string, params *WorkItemsParams) (*azure.WorkItemsList, error) {
-	workItemsList, _, err := s.workItemsList(projectId, teamId, iteration, userEmail, params)
+type MemberWorkItemsParams struct {
+	ProjectId string
+	TeamId    string
+	Iteration string
+	UserEmail string
+}
+
+func (s *WorkItemsService) MemberWorkItems(params *MemberWorkItemsParams) (*azure.WorkItemsList, error) {
+	workItemsList, _, err := s.workItemsList(params)
 	if err != nil {
 		return nil, err
 	}
 
-	workItems, _, err := s.workItemsDescription(projectId, workItemIds(workItemsList), params)
+	workItems, _, err := s.workItemsDescription(workItemIds(workItemsList), params)
 	if err != nil {
 		return nil, err
 	}
@@ -65,19 +68,16 @@ func workItemIds(workItemsList *azure.ShortWorkItemsList) []int {
 
 type workItemsListRequestBody struct {
 	Query string `json:"query,omitempty"`
-	sdf   string
 }
 
 // Api reference - https://docs.microsoft.com/en-us/rest/api/azure/devops/wit/wiql/query%20by%20wiql?view=azure-devops-rest-5.1
-func (s *WorkItemsService) workItemsList(projectId, teamId, iteration, userEmail string, params *WorkItemsParams) (*azure.ShortWorkItemsList, *http.Response, error) {
+func (s *WorkItemsService) workItemsList(params *MemberWorkItemsParams) (*azure.ShortWorkItemsList, *http.Response, error) {
 	workItemsList := new(azure.ShortWorkItemsList)
+	path := fmt.Sprintf("%s/%s/_apis/wit/wiql", params.ProjectId, params.TeamId)
+	query := fmt.Sprintf(workItemsListQuery, params.UserEmail, params.Iteration)
 
-	path := fmt.Sprintf("%s/%s/_apis/wit/wiql", projectId, teamId)
-
-	query := fmt.Sprintf(workItemsListQuery, userEmail, iteration)
 	body := &workItemsListRequestBody{Query: query}
-
-	resp, err := s.sling.New().Post(path).BodyJSON(body).QueryStruct(params).ReceiveSuccess(workItemsList)
+	resp, err := s.sling.New().Post(path).BodyJSON(body).ReceiveSuccess(workItemsList)
 	return workItemsList, resp, httputil.RelevantError(err, resp)
 }
 
@@ -87,13 +87,11 @@ type workItemsBatchRequestBody struct {
 }
 
 // Api reference - https://docs.microsoft.com/en-us/rest/api/azure/devops/wit/work%20items/get%20work%20items%20batch?view=azure-devops-rest-5.1
-func (s *WorkItemsService) workItemsDescription(projectId string, workItemIds []int, params *WorkItemsParams) (*azure.WorkItemsList, *http.Response, error) {
+func (s *WorkItemsService) workItemsDescription(workItemIds []int, params *MemberWorkItemsParams) (*azure.WorkItemsList, *http.Response, error) {
 	workItems := new(azure.WorkItemsList)
-
-	path := fmt.Sprintf("%s/_apis/wit/workitemsbatch", projectId)
+	path := fmt.Sprintf("%s/_apis/wit/workitemsbatch", params.ProjectId)
 
 	body := &workItemsBatchRequestBody{Ids: workItemIds, Fields: fields}
-
-	resp, err := s.sling.New().Post(path).BodyJSON(body).QueryStruct(params).ReceiveSuccess(workItems)
+	resp, err := s.sling.New().Post(path).BodyJSON(body).ReceiveSuccess(workItems)
 	return workItems, resp, httputil.RelevantError(err, resp)
 }
