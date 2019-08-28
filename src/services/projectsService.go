@@ -9,12 +9,12 @@ import (
 )
 
 type ProjectsService struct {
-	Sling *sling.Sling
+	sling *sling.Sling
 }
 
 func newProjectsService(sling *sling.Sling, organization string) *ProjectsService {
 	return &ProjectsService{
-		Sling: sling.Path(fmt.Sprintf("%s/_apis/projects/", organization)),
+		sling: sling.Path(fmt.Sprintf("%s/_apis/projects/", organization)),
 	}
 }
 
@@ -26,7 +26,7 @@ type ProjectsParams struct {
 func (s *ProjectsService) Projects(params *ProjectsParams) (*azure.ProjectsList, *http.Response, error) {
 	projects := new(azure.ProjectsList)
 	apiError := new(httputil.APIError)
-	resp, err := s.Sling.New().Get("").QueryStruct(params).Receive(projects, apiError)
+	resp, err := s.sling.New().Get("").QueryStruct(params).Receive(projects, apiError)
 	return projects, resp, httputil.RelevantError(err, apiError)
 }
 
@@ -35,6 +35,6 @@ func (s *ProjectsService) ProjectTeams(projectId string, params *ProjectsParams)
 	projectTeams := new(azure.TeamsList)
 	apiError := new(httputil.APIError)
 	path := fmt.Sprintf("%s/teams", projectId)
-	resp, err := s.Sling.New().Get(path).QueryStruct(params).Receive(projectTeams, apiError)
+	resp, err := s.sling.New().Get(path).QueryStruct(params).Receive(projectTeams, apiError)
 	return projectTeams, resp, httputil.RelevantError(err, apiError)
 }
