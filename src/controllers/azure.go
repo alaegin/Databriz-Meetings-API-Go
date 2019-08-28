@@ -32,12 +32,13 @@ func NewAzureController() *AzureController {
 }
 
 func (c *AzureController) RegisterRoutes(router *gin.RouterGroup) {
-	router.GET("getProjects", c.getProjectsList)
-	router.GET("getProjectTeams/:projectId", c.getProjectTeams)
+	router.GET("projects/list", c.getProjectsList)
 
-	router.GET("getTeamMembers/:projectId/:teamId", c.getTeamMembers)
-	router.GET("getTeamIterations/:projectId/:teamId", c.getTeamIterations)
-	router.GET("getMemberWorkItems/:projectId/:teamId", c.getMemberWorkItems)
+	router.GET("teams/list", c.getProjectTeams)              // ?projectId
+	router.GET("teams/members/list", c.getTeamMembers)       // ?projectId, teamId
+	router.GET("teams/iterations/list", c.getTeamIterations) // ?projectId, teamId
+
+	router.GET("members/:memberId/workItems/list", c.getMemberWorkItems) // ?projectId, teamId, iteration
 }
 
 // @Summary Список проектов
@@ -46,7 +47,7 @@ func (c *AzureController) RegisterRoutes(router *gin.RouterGroup) {
 // @Produce json
 // @Success 200 {array} models.Project
 // @Failure 500 {object} httputil.HTTPError "When failed to receive data from Azure"
-// @Router /api/v1/azure/getProjects [get]
+// @Router /v1/azure/projects/list [get]
 func (AzureController) getProjectsList(ctx *gin.Context) {
 	projects, _, err := client.Projects.Projects(
 		&services.ProjectsParams{ApiVersion: "5.1"},
@@ -63,13 +64,13 @@ func (AzureController) getProjectsList(ctx *gin.Context) {
 // @Description Возвращает список команд проекта
 // @Tags Azure
 // @Produce json
-// @Param projectId path string true "Project Id"
+// @Param projectId query string true "Project Id"
 // @Success 200 {array} models.Team
 // @Failure 400 {object} httputil.HTTPError "When user has not provided projectId parameter"
 // @Failure 500 {object} httputil.HTTPError "When failed to receive data from Azure"
-// @Router /api/v1/azure/getProjectTeams/{projectId} [get]
+// @Router /v1/azure/teams/list [get]
 func (AzureController) getProjectTeams(ctx *gin.Context) {
-	projectId := ctx.Param("projectId")
+	projectId := ctx.Query("projectId")
 
 	if projectId == "" {
 		httputil.NewError(ctx, http.StatusBadRequest, "projectId must be provided")
@@ -93,15 +94,15 @@ func (AzureController) getProjectTeams(ctx *gin.Context) {
 // @Description Возвращает список участников команды проекта
 // @Tags Azure
 // @Produce json
-// @Param projectId path string true "Project Id"
-// @Param teamId path string true "Team Id"
+// @Param projectId query string true "Project Id"
+// @Param teamId query string true "Team Id"
 // @Success 200 {array} models.Member
 // @Failure 400 {object} httputil.HTTPError "When user has not provided projectId or teamId parameter"
 // @Failure 500 {object} httputil.HTTPError "When failed to receive data from Azure"
-// @Router /api/v1/azure/getTeamMembers/{projectId}/{teamId} [get]
+// @Router /v1/azure/teams/members/list [get]
 func (AzureController) getTeamMembers(ctx *gin.Context) {
-	projectId := ctx.Param("projectId")
-	teamId := ctx.Param("teamId")
+	projectId := ctx.Query("projectId")
+	teamId := ctx.Query("teamId")
 
 	if projectId == "" || teamId == "" {
 		httputil.NewError(ctx, http.StatusBadRequest, "projectId and teamId must be provided")
@@ -126,15 +127,15 @@ func (AzureController) getTeamMembers(ctx *gin.Context) {
 // @Description Возвращает список спринтов команды
 // @Tags Azure
 // @Produce json
-// @Param projectId path string true "Project Id"
-// @Param teamId path string true "Team Id"
+// @Param projectId query string true "Project Id"
+// @Param teamId query string true "Team Id"
 // @Success 200 {array} models.Iteration
 // @Failure 400 {object} httputil.HTTPError "When user has not provided projectId or teamId parameter"
 // @Failure 500 {object} httputil.HTTPError "When failed to receive data from Azure"
-// @Router /api/v1/azure/getTeamIterations/{projectId}/{teamId} [get]
+// @Router /v1/azure/teams/iterations/list [get]
 func (AzureController) getTeamIterations(ctx *gin.Context) {
-	projectId := ctx.Param("projectId")
-	teamId := ctx.Param("teamId")
+	projectId := ctx.Query("projectId")
+	teamId := ctx.Query("teamId")
 
 	if projectId == "" || teamId == "" {
 		httputil.NewError(ctx, http.StatusBadRequest, "projectId and teamId must be provided")
@@ -158,18 +159,18 @@ func (AzureController) getTeamIterations(ctx *gin.Context) {
 // @Summary Задачи определенного участника команды
 // @Tags Azure
 // @Produce json
-// @Param projectId path string true "Project Id"
-// @Param teamId path string true "Team Id"
-// @Param userEmail query string true "User Email"
+// @Param userId path string true "User Email"
+// @Param projectId query string true "Project Id"
+// @Param teamId query string true "Team Id"
 // @Param iteration query string true "Iteration Name"
 // @Success 200 {object} azure.WorkItemsResponse
 // @Failure 400 {object} httputil.HTTPError "When user has not provided projectId or teamId parameter"
 // @Failure 500 {object} httputil.HTTPError "When failed to receive data from Azure"
-// @Router /api/v1/azure/getMemberWorkItems/{projectId}/{teamId} [get]
+// @Router /v1/azure/members/{memberId}/workItems/list [get]
 func (AzureController) getMemberWorkItems(ctx *gin.Context) {
-	projectId := ctx.Param("projectId")
-	teamId := ctx.Param("teamId")
-	userEmail := ctx.Query("userEmail")
+	userEmail := ctx.Param("memberId")
+	projectId := ctx.Query("projectId")
+	teamId := ctx.Query("teamId")
 	iteration := ctx.Query("iteration")
 
 	if projectId == "" || teamId == "" || userEmail == "" || iteration == "" {
