@@ -13,6 +13,7 @@ import (
 
 // @Title Databriz Meetings Api
 // @Description Created by mobile developers
+// @BasePath /api
 // @Version 0.1
 func main() {
 	config.LoadConfig()
