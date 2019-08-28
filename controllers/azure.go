@@ -46,7 +46,7 @@ func (AzureController) getProjectsList(ctx *gin.Context) {
 		&services.ProjectsParams{},
 	)
 	if err != nil {
-		httputil.NewInternalAzureError(ctx)
+		httputil.NewInternalAzureError(ctx, err)
 		return
 	}
 
@@ -75,7 +75,7 @@ func (AzureController) getProjectTeams(ctx *gin.Context) {
 	)
 
 	if err != nil {
-		httputil.NewInternalAzureError(ctx)
+		httputil.NewInternalAzureError(ctx, err)
 		return
 	}
 
@@ -107,7 +107,7 @@ func (AzureController) getTeamMembers(ctx *gin.Context) {
 	)
 
 	if err != nil {
-		httputil.NewInternalAzureError(ctx)
+		httputil.NewInternalAzureError(ctx, err)
 		return
 	}
 
@@ -139,7 +139,7 @@ func (AzureController) getTeamIterations(ctx *gin.Context) {
 	)
 
 	if err != nil {
-		httputil.NewInternalAzureError(ctx)
+		httputil.NewInternalAzureError(ctx, err)
 		return
 	}
 
@@ -176,7 +176,7 @@ func (AzureController) getMemberWorkItems(ctx *gin.Context) {
 	)
 
 	if err != nil {
-		httputil.NewInternalAzureError(ctx)
+		httputil.NewInternalAzureError(ctx, err)
 		return
 	}
 

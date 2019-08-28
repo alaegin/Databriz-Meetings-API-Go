@@ -23,9 +23,8 @@ type ProjectsParams struct{}
 // Api reference - https://docs.microsoft.com/en-us/rest/api/azure/devops/core/projects/list?view=azure-devops-rest-5.1
 func (s *ProjectsService) Projects(params *ProjectsParams) (*azure.ProjectsList, *http.Response, error) {
 	projects := new(azure.ProjectsList)
-	apiError := new(httputil.APIError)
-	resp, err := s.sling.New().Get("").Receive(projects, apiError)
-	return projects, resp, httputil.RelevantError(err, apiError)
+	resp, err := s.sling.New().Get("").ReceiveSuccess(projects)
+	return projects, resp, httputil.RelevantError(err, resp)
 }
 
 type ProjectTeamsParams struct {
@@ -35,8 +34,7 @@ type ProjectTeamsParams struct {
 // Api reference - https://docs.microsoft.com/en-us/rest/api/azure/devops/core/teams/get%20teams?view=azure-devops-rest-5.1
 func (s *ProjectsService) ProjectTeams(params *ProjectTeamsParams) (*azure.TeamsList, *http.Response, error) {
 	projectTeams := new(azure.TeamsList)
-	apiError := new(httputil.APIError)
 	path := fmt.Sprintf("%s/teams", params.ProjectId)
-	resp, err := s.sling.New().Get(path).Receive(projectTeams, apiError)
-	return projectTeams, resp, httputil.RelevantError(err, apiError)
+	resp, err := s.sling.New().Get(path).ReceiveSuccess(projectTeams)
+	return projectTeams, resp, httputil.RelevantError(err, resp)
 }

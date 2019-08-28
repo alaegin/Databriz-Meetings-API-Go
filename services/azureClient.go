@@ -23,11 +23,11 @@ type AzureClient struct {
 
 func NewAzureClient(token string, organization string) *AzureClient {
 	httpClient := &http.Client{}
-	base := sling.
-		New().
+	base := sling.New().
 		Client(httpClient).
 		Base(azureAPI).
 		SetBasicAuth("", token).
+		Set("Accept", "application/json").
 		QueryStruct(clientParams{ApiVersion: apiVersion})
 
 	return &AzureClient{

@@ -26,10 +26,9 @@ type TeamMembersParams struct {
 // Api reference - https://docs.microsoft.com/en-us/rest/api/azure/devops/core/teams/get%20team%20members%20with%20extended%20properties?view=azure-devops-rest-5.1
 func (s *TeamsService) TeamMembers(params *TeamMembersParams) (*azure.MembersList, *http.Response, error) {
 	members := new(azure.MembersList)
-	apiError := new(httputil.APIError)
 	path := fmt.Sprintf("_apis/projects/%s/teams/%s/members", params.ProjectId, params.TeamId)
-	resp, err := s.sling.New().Get(path).Receive(members, apiError)
-	return members, resp, httputil.RelevantError(err, apiError)
+	resp, err := s.sling.New().Get(path).ReceiveSuccess(members)
+	return members, resp, httputil.RelevantError(err, resp)
 }
 
 type TeamIterationsParams struct {
@@ -40,8 +39,7 @@ type TeamIterationsParams struct {
 // Api reference - https://docs.microsoft.com/en-us/rest/api/azure/devops/work/iterations/list?view=azure-devops-rest-5.1
 func (s *TeamsService) TeamIterations(params *TeamIterationsParams) (*azure.IterationsList, *http.Response, error) {
 	iterations := new(azure.IterationsList)
-	apiError := new(httputil.APIError)
 	path := fmt.Sprintf("%s/%s//_apis/work/teamsettings/iterations", params.ProjectId, params.TeamId)
-	resp, err := s.sling.New().Get(path).Receive(iterations, apiError)
-	return iterations, resp, httputil.RelevantError(err, apiError)
+	resp, err := s.sling.New().Get(path).ReceiveSuccess(iterations)
+	return iterations, resp, httputil.RelevantError(err, resp)
 }
