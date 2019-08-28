@@ -1,35 +1,5 @@
 basePath: /api
 definitions:
-  azure.Fields:
-    properties:
-      System.Reason:
-        type: string
-      System.Title:
-        type: string
-      System.WorkItemType:
-        type: string
-    type: object
-  azure.WorkItem:
-    properties:
-      fields:
-        $ref: '#/definitions/azure.Fields'
-        type: object
-      id:
-        type: integer
-      rev:
-        type: integer
-      url:
-        type: string
-    type: object
-  azure.WorkItemsResponse:
-    properties:
-      count:
-        type: integer
-      value:
-        items:
-          $ref: '#/definitions/azure.WorkItem'
-        type: array
-    type: object
   httputil.HTTPError:
     properties:
       message:
@@ -56,6 +26,8 @@ definitions:
     type: object
   models.Member:
     properties:
+      avatar_url:
+        type: string
       email:
         type: string
       id:
@@ -79,6 +51,21 @@ definitions:
       name:
         type: string
     type: object
+  models.WorkItem:
+    properties:
+      id:
+        type: integer
+      reason:
+        type: string
+      rev:
+        type: integer
+      title:
+        type: string
+      type:
+        type: string
+      url:
+        type: string
+    type: object
 info:
   contact: {}
   description: Created by mobile developers
@@ -91,7 +78,7 @@ paths:
       parameters:
       - description: User Email
         in: path
-        name: userId
+        name: memberId
         required: true
         type: string
       - description: Project Id
@@ -115,7 +102,9 @@ paths:
         "200":
           description: OK
           schema:
-            $ref: '#/definitions/azure.WorkItemsResponse'
+            items:
+              $ref: '#/definitions/models.WorkItem'
+            type: array
         "400":
           description: When user has not provided projectId or teamId parameter
           schema:

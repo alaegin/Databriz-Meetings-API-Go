@@ -149,11 +149,11 @@ func (AzureController) getTeamIterations(ctx *gin.Context) {
 // @Summary Задачи определенного участника команды
 // @Tags Azure
 // @Produce json
-// @Param userId path string true "User Email"
+// @Param memberId path string true "User Email"
 // @Param projectId query string true "Project Id"
 // @Param teamId query string true "Team Id"
 // @Param iteration query string true "Iteration Name"
-// @Success 200 {object} azure.WorkItemsResponse
+// @Success 200 {array} models.WorkItem
 // @Failure 400 {object} httputil.HTTPError "When user has not provided projectId or teamId parameter"
 // @Failure 500 {object} httputil.HTTPError "When failed to receive data from Azure"
 // @Router /v1/azure/members/{memberId}/workItems/list [get]

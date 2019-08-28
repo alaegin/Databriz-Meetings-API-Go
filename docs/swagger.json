@@ -22,7 +22,7 @@
                     {
                         "type": "string",
                         "description": "User Email",
-                        "name": "userId",
+                        "name": "memberId",
                         "in": "path",
                         "required": true
                     },
@@ -52,7 +52,10 @@
                     "200": {
                         "description": "OK",
                         "schema": {
-                            "$ref": "#/definitions/azure.WorkItemsResponse"
+                            "type": "array",
+                            "items": {
+                                "$ref": "#/definitions/models.WorkItem"
+                            }
                         }
                     },
                     "400": {
@@ -247,52 +250,6 @@
         }
     },
     "definitions": {
-        "azure.Fields": {
-            "type": "object",
-            "properties": {
-                "System.Reason": {
-                    "type": "string"
-                },
-                "System.Title": {
-                    "type": "string"
-                },
-                "System.WorkItemType": {
-                    "type": "string"
-                }
-            }
-        },
-        "azure.WorkItem": {
-            "type": "object",
-            "properties": {
-                "fields": {
-                    "type": "object",
-                    "$ref": "#/definitions/azure.Fields"
-                },
-                "id": {
-                    "type": "integer"
-                },
-                "rev": {
-                    "type": "integer"
-                },
-                "url": {
-                    "type": "string"
-                }
-            }
-        },
-        "azure.WorkItemsResponse": {
-            "type": "object",
-            "properties": {
-                "count": {
-                    "type": "integer"
-                },
-                "value": {
-                    "type": "array",
-                    "items": {
-                        "$ref": "#/definitions/azure.WorkItem"
-                    }
-                }
-            }
-        },
         "httputil.HTTPError": {
             "type": "object",
             "properties": {
@@ -332,6 +289,9 @@
         "models.Member": {
             "type": "object",
             "properties": {
+                "avatar_url": {
+                    "type": "string"
+                },
                 "email": {
                     "type": "string"
                 },
@@ -364,6 +324,29 @@
                     "type": "string"
                 },
                 "name": {
+                    "type": "string"
+                }
+            }
+        },
+        "models.WorkItem": {
+            "type": "object",
+            "properties": {
+                "id": {
+                    "type": "integer"
+                },
+                "reason": {
+                    "type": "string"
+                },
+                "rev": {
+                    "type": "integer"
+                },
+                "title": {
+                    "type": "string"
+                },
+                "type": {
+                    "type": "string"
+                },
+                "url": {
                     "type": "string"
                 }
             }
