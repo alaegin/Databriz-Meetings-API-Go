@@ -1,14 +1,16 @@
 package main
 
 import (
-	_ "./docs"
-	"./src/config"
-	"./src/controllers"
+	"Databriz-Meetings-API-Go/configs"
+	"Databriz-Meetings-API-Go/controllers"
 	"fmt"
 	"github.com/gin-gonic/gin"
+	"net/http"
+
+	// Swagger imports
+	_ "./docs" // Do NOT delete
 	swaggerFiles "github.com/swaggo/files"
 	ginSwagger "github.com/swaggo/gin-swagger"
-	"net/http"
 )
 
 // @Title Databriz Meetings Api
@@ -16,7 +18,7 @@ import (
 // @BasePath /api
 // @Version 0.1
 func main() {
-	config.LoadConfig()
+	configs.LoadConfig()
 	//db.InitDatabase()
 	configureRoutes()
 }

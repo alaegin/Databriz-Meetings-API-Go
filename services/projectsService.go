@@ -1,8 +1,8 @@
 package services
 
 import (
-	"../httputil"
-	"../models/azure"
+	"Databriz-Meetings-API-Go/httputil"
+	"Databriz-Meetings-API-Go/models/azure"
 	"fmt"
 	"github.com/dghubble/sling"
 	"net/http"

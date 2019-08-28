@@ -1,7 +1,7 @@
 package models
 
 import (
-	"Databriz-Meetings-API-Go/src/models/azure"
+	"Databriz-Meetings-API-Go/models/azure"
 	"time"
 )
 

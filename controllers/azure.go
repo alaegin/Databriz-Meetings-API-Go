@@ -1,10 +1,10 @@
 package controllers
 
 import (
-	"../config"
-	"../httputil"
-	"../models"
-	"../services"
+	"Databriz-Meetings-API-Go/configs"
+	"Databriz-Meetings-API-Go/httputil"
+	"Databriz-Meetings-API-Go/models"
+	"Databriz-Meetings-API-Go/services"
 	"github.com/gin-gonic/gin"
 	"github.com/spf13/viper"
 	"net/http"
@@ -17,8 +17,8 @@ type AzureController struct{}
 func NewAzureController() *AzureController {
 
 	client = services.NewAzureClient(
-		viper.GetString(config.AzureToken),
-		viper.GetString(config.AzureOrganization),
+		viper.GetString(configs.AzureToken),
+		viper.GetString(configs.AzureOrganization),
 	)
 
 	return &AzureController{}

@@ -1,6 +1,6 @@
 package models
 
-import "Databriz-Meetings-API-Go/src/models/azure"
+import "Databriz-Meetings-API-Go/models/azure"
 
 type Member struct {
 	ID        string `json:"id"`
