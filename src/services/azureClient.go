@@ -10,7 +10,7 @@ const (
 )
 
 type AzureClient struct {
-	Sling    *sling.Sling
+	sling    *sling.Sling
 	Projects *ProjectsService
 	Teams    *TeamsService
 }
@@ -20,7 +20,7 @@ func NewAzureClient(token string, organization string) *AzureClient {
 	base := sling.New().Client(httpClient).Base(azureAPI).SetBasicAuth("", token)
 
 	return &AzureClient{
-		Sling:    base,
+		sling:    base,
 		Projects: newProjectsService(base.New(), organization),
 		Teams:    newTeamsService(base.New(), organization),
 	}
