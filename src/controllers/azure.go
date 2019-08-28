@@ -5,13 +5,11 @@ import (
 	"../httputil"
 	"../models"
 	"../services"
-	"../utils"
 	"github.com/gin-gonic/gin"
 	"github.com/spf13/viper"
 	"net/http"
 )
 
-var interactor utils.AzureInteractor
 var client *services.AzureClient
 
 type AzureController struct{}
@@ -22,11 +20,6 @@ func NewAzureController() *AzureController {
 		viper.GetString(config.AzureToken),
 		viper.GetString(config.AzureOrganization),
 	)
-
-	interactor = utils.AzureInteractor{
-		OrganizationName: viper.GetString(config.AzureOrganization),
-		AuthToken:        viper.GetString(config.AzureToken),
-	}
 
 	return &AzureController{}
 }
@@ -174,27 +167,22 @@ func (AzureController) getMemberWorkItems(ctx *gin.Context) {
 	iteration := ctx.Query("iteration")
 
 	if projectId == "" || teamId == "" || userEmail == "" || iteration == "" {
-		httputil.NewError(ctx, http.StatusBadRequest, "projectId, teamId, userId, iteration must be provided")
+		httputil.NewError(ctx, http.StatusBadRequest, "projectId, teamId, userEmail, iteration must be provided")
 		return
 	}
 
-	workItemsWiql, err := interactor.GetWorkItemsByWiql(projectId, teamId, userEmail, iteration)
+	workItems, err := client.WorkItems.MemberWorkItems(
+		projectId,
+		teamId,
+		iteration,
+		userEmail,
+		&services.WorkItemsParams{ApiVersion: "5.1"},
+	)
+
 	if err != nil {
 		httputil.NewInternalAzureError(ctx)
 		return
 	}
 
-	// Request detailed works
-	var newList = make([]int, len(workItemsWiql.WorkItems))
-	for index, element := range workItemsWiql.WorkItems {
-		newList[index] = element.ID
-	}
-
-	workItems, err := interactor.GetWorkItemsDescription(projectId, newList)
-	if err != nil {
-		httputil.NewInternalAzureError(ctx)
-		return
-	}
-
-	ctx.JSON(http.StatusOK, workItems)
+	ctx.JSON(http.StatusOK, models.FromAzureWorkItems(workItems))
 }
