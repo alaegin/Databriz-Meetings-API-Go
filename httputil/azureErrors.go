@@ -1,37 +1,18 @@
 package httputil
 
-import "fmt"
+import (
+	"errors"
+	"fmt"
+	"net/http"
+	"strconv"
+)
 
-type APIError struct {
-	Errors []ErrorDetail `json:"errors"`
-}
-
-type ErrorDetail struct {
-	Message string `json:"message"`
-	Code    int    `json:"code"`
-}
-
-func (e APIError) Error() string {
-	if len(e.Errors) > 0 {
-		err := e.Errors[0]
-		return fmt.Sprintf("azure: %d %v", err.Code, err.Message)
-	}
-	return ""
-}
-
-func (e APIError) Empty() bool {
-	if len(e.Errors) == 0 {
-		return true
-	}
-	return false
-}
-
-func RelevantError(httpError error, apiError *APIError) error {
+func RelevantError(httpError error, resp *http.Response) error {
 	if httpError != nil {
 		return httpError
 	}
-	if apiError.Empty() {
-		return nil
+	if code := resp.StatusCode; code < 200 || code > 299 {
+		return errors.New(fmt.Sprintf("Received %s from azure request", strconv.Itoa(code)))
 	}
-	return apiError
+	return nil
 }

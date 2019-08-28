@@ -65,20 +65,20 @@ func workItemIds(workItemsList *azure.ShortWorkItemsList) []int {
 
 type workItemsListRequestBody struct {
 	Query string `json:"query,omitempty"`
+	sdf   string
 }
 
 // Api reference - https://docs.microsoft.com/en-us/rest/api/azure/devops/wit/wiql/query%20by%20wiql?view=azure-devops-rest-5.1
 func (s *WorkItemsService) workItemsList(projectId, teamId, iteration, userEmail string, params *WorkItemsParams) (*azure.ShortWorkItemsList, *http.Response, error) {
 	workItemsList := new(azure.ShortWorkItemsList)
-	apiError := new(httputil.APIError)
 
 	path := fmt.Sprintf("%s/%s/_apis/wit/wiql", projectId, teamId)
 
 	query := fmt.Sprintf(workItemsListQuery, userEmail, iteration)
 	body := &workItemsListRequestBody{Query: query}
 
-	resp, err := s.sling.New().Post(path).BodyJSON(body).QueryStruct(params).Receive(workItemsList, apiError)
-	return workItemsList, resp, httputil.RelevantError(err, apiError)
+	resp, err := s.sling.New().Post(path).BodyJSON(body).QueryStruct(params).ReceiveSuccess(workItemsList)
+	return workItemsList, resp, httputil.RelevantError(err, resp)
 }
 
 type workItemsBatchRequestBody struct {
@@ -89,12 +89,11 @@ type workItemsBatchRequestBody struct {
 // Api reference - https://docs.microsoft.com/en-us/rest/api/azure/devops/wit/work%20items/get%20work%20items%20batch?view=azure-devops-rest-5.1
 func (s *WorkItemsService) workItemsDescription(projectId string, workItemIds []int, params *WorkItemsParams) (*azure.WorkItemsList, *http.Response, error) {
 	workItems := new(azure.WorkItemsList)
-	apiError := new(httputil.APIError)
 
 	path := fmt.Sprintf("%s/_apis/wit/workitemsbatch", projectId)
 
 	body := &workItemsBatchRequestBody{Ids: workItemIds, Fields: fields}
 
-	resp, err := s.sling.New().Post(path).BodyJSON(body).QueryStruct(params).Receive(workItems, apiError)
-	return workItems, resp, httputil.RelevantError(err, apiError)
+	resp, err := s.sling.New().Post(path).BodyJSON(body).QueryStruct(params).ReceiveSuccess(workItems)
+	return workItems, resp, httputil.RelevantError(err, resp)
 }
