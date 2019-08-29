@@ -89,7 +89,7 @@ func (AzureController) getProjectTeams(ctx *gin.Context) {
 // @Param projectId query string true "Project Id"
 // @Param teamId query string true "Team Id"
 // @Success 200 {array} models.Member
-// @Failure 400 {object} httputil.HTTPError "When user has not provided projectId or teamId parameter"
+// @Failure 400 {object} httputil.HTTPError "When user has not provided projectId or teamId parameters"
 // @Failure 500 {object} httputil.HTTPError "When failed to receive data from Azure"
 // @Router /v1/azure/teams/members/list [get]
 func (AzureController) getTeamMembers(ctx *gin.Context) {
@@ -121,7 +121,7 @@ func (AzureController) getTeamMembers(ctx *gin.Context) {
 // @Param projectId query string true "Project Id"
 // @Param teamId query string true "Team Id"
 // @Success 200 {array} models.Iteration
-// @Failure 400 {object} httputil.HTTPError "When user has not provided projectId or teamId parameter"
+// @Failure 400 {object} httputil.HTTPError "When user has not provided projectId or teamId parameters"
 // @Failure 500 {object} httputil.HTTPError "When failed to receive data from Azure"
 // @Router /v1/azure/teams/iterations/list [get]
 func (AzureController) getTeamIterations(ctx *gin.Context) {
@@ -154,7 +154,7 @@ func (AzureController) getTeamIterations(ctx *gin.Context) {
 // @Param teamId query string true "Team Id"
 // @Param iteration query string true "Iteration Name"
 // @Success 200 {array} models.WorkItem
-// @Failure 400 {object} httputil.HTTPError "When user has not provided projectId or teamId parameter"
+// @Failure 400 {object} httputil.HTTPError "When user has not provided memberId, projectId, teamId, iteration parameters"
 // @Failure 500 {object} httputil.HTTPError "When failed to receive data from Azure"
 // @Router /v1/azure/members/{memberId}/workItems/list [get]
 func (AzureController) getMemberWorkItems(ctx *gin.Context) {
