@@ -4,6 +4,7 @@ import (
 	"Databriz-Meetings-API-Go/configs"
 	"Databriz-Meetings-API-Go/controllers"
 	"fmt"
+	"github.com/gin-contrib/cors"
 	"github.com/gin-gonic/gin"
 	"net/http"
 
@@ -26,6 +27,7 @@ func main() {
 // Creates Gin router and configures controllers
 func configureRoutes() {
 	router := gin.Default()
+	router.Use(cors.Default())
 
 	router.GET("/", index)
 
