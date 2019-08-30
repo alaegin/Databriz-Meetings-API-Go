@@ -44,6 +44,12 @@ func configureRoutes() {
 			mobileController := controllers.NewMobileController()
 			mobileController.RegisterRoutes(mobile)
 		}
+
+		web := api.Group("/web")
+		{
+			webController := controllers.NewWebController()
+			webController.RegisterRoutes(web)
+		}
 	}
 
 	// Registers swagger for documentation

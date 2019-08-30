@@ -34,7 +34,7 @@ func (MobileController) showMemberWorkItems(ctx *gin.Context) {
 		return
 	}
 
-	db.StoreData(requestBody)
+	db.GetMemoryStorage().StoreData(requestBody)
 
 	ctx.JSON(http.StatusOK, struct {
 		Status string `json:"status"`

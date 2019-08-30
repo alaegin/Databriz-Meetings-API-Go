@@ -247,6 +247,62 @@
                     }
                 }
             }
+        },
+        "/v1/mobile/control/show": {
+            "post": {
+                "description": "Переключает отображающегося ппользователя на фронте",
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Mobile"
+                ],
+                "summary": "Переключение фронта",
+                "responses": {
+                    "200": {},
+                    "400": {
+                        "description": "When user has not provided correct request body",
+                        "schema": {
+                            "$ref": "#/definitions/httputil.HTTPError"
+                        }
+                    }
+                }
+            }
+        },
+        "/v1/web/data/revision/isActual": {
+            "get": {
+                "description": "Возвращает актуальную версию данных и флаг необходимости обновления",
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Web"
+                ],
+                "summary": "Проверка актуальности данных на фронте",
+                "parameters": [
+                    {
+                        "type": "integer",
+                        "description": "Revision Id",
+                        "name": "revision",
+                        "in": "query",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/isDataActualResponse"
+                        }
+                    },
+                    "400": {
+                        "description": "When user has provided wrong query param",
+                        "schema": {
+                            "$ref": "#/definitions/httputil.HTTPError"
+                        }
+                    }
+                }
+            }
         }
     },
     "definitions": {

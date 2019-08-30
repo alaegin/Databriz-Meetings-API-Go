@@ -4,19 +4,34 @@ import (
 	"Databriz-Meetings-API-Go/models"
 )
 
-var dataChanged bool = false
-var request models.ShowRequestBody
-
-func DataHasChanged() bool {
-	return dataChanged
+type memoryStorage struct {
+	dataRevision int
+	request      models.ShowRequestBody
 }
 
-func StoreData(body models.ShowRequestBody) {
-	request = body
-	dataChanged = true
+var storage memoryStorage
+
+func init() {
+	storage = memoryStorage{}
 }
 
-func GetData() *models.ShowRequestBody {
-	dataChanged = false
-	return &request
+func GetMemoryStorage() *memoryStorage {
+	return &storage
+}
+
+func (storage *memoryStorage) GetDataRevision() int {
+	return storage.dataRevision
+}
+
+func (storage *memoryStorage) ShouldUpdate(localRevision int) bool {
+	return storage.dataRevision > localRevision
+}
+
+func (storage *memoryStorage) StoreData(body models.ShowRequestBody) {
+	storage.dataRevision++
+	storage.request = body
+}
+
+func (storage *memoryStorage) GetData() *models.ShowRequestBody {
+	return &storage.request
 }
