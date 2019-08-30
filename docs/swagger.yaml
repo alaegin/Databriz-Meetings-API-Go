@@ -53,12 +53,22 @@ definitions:
     type: object
   models.WorkItem:
     properties:
+      completed_time:
+        type: number
+      creation_date:
+        type: string
       id:
+        type: integer
+      original_estimate:
+        type: number
+      priority:
         type: integer
       reason:
         type: string
       rev:
         type: integer
+      state:
+        type: string
       title:
         type: string
       type:
@@ -106,7 +116,8 @@ paths:
               $ref: '#/definitions/models.WorkItem'
             type: array
         "400":
-          description: When user has not provided projectId or teamId parameter
+          description: When user has not provided memberId, projectId, teamId, iteration
+            parameters
           schema:
             $ref: '#/definitions/httputil.HTTPError'
         "500":
@@ -159,7 +170,7 @@ paths:
               $ref: '#/definitions/models.Iteration'
             type: array
         "400":
-          description: When user has not provided projectId or teamId parameter
+          description: When user has not provided projectId or teamId parameters
           schema:
             $ref: '#/definitions/httputil.HTTPError'
         "500":
@@ -222,7 +233,7 @@ paths:
               $ref: '#/definitions/models.Member'
             type: array
         "400":
-          description: When user has not provided projectId or teamId parameter
+          description: When user has not provided projectId or teamId parameters
           schema:
             $ref: '#/definitions/httputil.HTTPError'
         "500":

@@ -59,7 +59,7 @@
                         }
                     },
                     "400": {
-                        "description": "When user has not provided projectId or teamId parameter",
+                        "description": "When user has not provided memberId, projectId, teamId, iteration parameters",
                         "schema": {
                             "$ref": "#/definitions/httputil.HTTPError"
                         }
@@ -139,7 +139,7 @@
                         }
                     },
                     "400": {
-                        "description": "When user has not provided projectId or teamId parameter",
+                        "description": "When user has not provided projectId or teamId parameters",
                         "schema": {
                             "$ref": "#/definitions/httputil.HTTPError"
                         }
@@ -234,7 +234,7 @@
                         }
                     },
                     "400": {
-                        "description": "When user has not provided projectId or teamId parameter",
+                        "description": "When user has not provided projectId or teamId parameters",
                         "schema": {
                             "$ref": "#/definitions/httputil.HTTPError"
                         }
@@ -331,7 +331,19 @@
         "models.WorkItem": {
             "type": "object",
             "properties": {
+                "completed_time": {
+                    "type": "number"
+                },
+                "creation_date": {
+                    "type": "string"
+                },
                 "id": {
+                    "type": "integer"
+                },
+                "original_estimate": {
+                    "type": "number"
+                },
+                "priority": {
                     "type": "integer"
                 },
                 "reason": {
@@ -339,6 +351,9 @@
                 },
                 "rev": {
                     "type": "integer"
+                },
+                "state": {
+                    "type": "string"
                 },
                 "title": {
                     "type": "string"

@@ -7,7 +7,6 @@ import (
 	"github.com/gin-contrib/cors"
 	"github.com/gin-gonic/gin"
 	"net/http"
-
 	// Swagger imports
 	_ "./docs" // Do NOT delete
 	swaggerFiles "github.com/swaggo/files"
@@ -38,6 +37,12 @@ func configureRoutes() {
 		{
 			azureController := controllers.NewAzureController()
 			azureController.RegisterRoutes(azure)
+		}
+
+		mobile := api.Group("/mobile")
+		{
+			mobileController := controllers.NewMobileController()
+			mobileController.RegisterRoutes(mobile)
 		}
 	}
 
