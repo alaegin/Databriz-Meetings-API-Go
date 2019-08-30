@@ -24,8 +24,8 @@ func (c *MobileController) RegisterRoutes(router *gin.RouterGroup) {
 // @Tags Mobile
 // @Produce json
 // @Success 200
-// @Failure 400 {object} httputil.HTTPError "When user has not provided correct response body"
-// @Router /v1/azure/teams/list [get]
+// @Failure 400 {object} httputil.HTTPError "When user has not provided correct request body"
+// @Router /v1/mobile/control/show [post]
 func (MobileController) showMemberWorkItems(ctx *gin.Context) {
 	var requestBody models.ShowRequestBody
 	if err := ctx.BindJSON(&requestBody); err != nil {
