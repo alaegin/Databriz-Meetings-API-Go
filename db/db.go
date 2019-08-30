@@ -21,14 +21,8 @@ const (
 var db *gorm.DB
 
 func InitDatabase() {
-	connectionUrl := strings.Replace(dbConnectionUrl, "{login}", viper.GetString(configs.DbLogin), -1)
-	connectionUrl = strings.Replace(connectionUrl, "{password}", viper.GetString(configs.DbPassword), -1)
-	connectionUrl = strings.Replace(connectionUrl, "{host}", viper.GetString(configs.DbHost), -1)
-	connectionUrl = strings.Replace(connectionUrl, "{port}", viper.GetString(configs.DbPort), -1)
-	connectionUrl = strings.Replace(connectionUrl, "{table}", viper.GetString(configs.DbName), -1)
-
 	// Connect to db
-	conn, err := gorm.Open("mysql", connectionUrl)
+	conn, err := gorm.Open("mysql", buildConnectionUrl())
 
 	if err != nil {
 		panic(err)
@@ -53,4 +47,14 @@ func InitDatabase() {
 
 func GetDB() *gorm.DB {
 	return db
+}
+
+func buildConnectionUrl() string {
+	connectionUrl := strings.Replace(dbConnectionUrl, "{login}", viper.GetString(configs.DbLogin), -1)
+	connectionUrl = strings.Replace(connectionUrl, "{password}", viper.GetString(configs.DbPassword), -1)
+	connectionUrl = strings.Replace(connectionUrl, "{host}", viper.GetString(configs.DbHost), -1)
+	connectionUrl = strings.Replace(connectionUrl, "{port}", viper.GetString(configs.DbPort), -1)
+	connectionUrl = strings.Replace(connectionUrl, "{table}", viper.GetString(configs.DbName), -1)
+
+	return connectionUrl
 }
