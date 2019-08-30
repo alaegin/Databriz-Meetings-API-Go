@@ -10,18 +10,18 @@ import (
 	"net/http"
 )
 
-var client *services.AzureClient
-
-type AzureController struct{}
+type AzureController struct {
+	client *services.AzureClient
+}
 
 func NewAzureController() *AzureController {
-
-	client = services.NewAzureClient(
+	client := services.NewAzureClient(
 		viper.GetString(configs.AzureToken),
 		viper.GetString(configs.AzureOrganization),
 	)
-
-	return &AzureController{}
+	return &AzureController{
+		client: client,
+	}
 }
 
 func (c *AzureController) RegisterRoutes(router *gin.RouterGroup) {
@@ -41,8 +41,8 @@ func (c *AzureController) RegisterRoutes(router *gin.RouterGroup) {
 // @Success 200 {array} models.Project
 // @Failure 500 {object} httputil.HTTPError "When failed to receive data from Azure"
 // @Router /v1/azure/projects/list [get]
-func (AzureController) getProjectsList(ctx *gin.Context) {
-	projects, _, err := client.Projects.Projects(
+func (c *AzureController) getProjectsList(ctx *gin.Context) {
+	projects, _, err := c.client.Projects.Projects(
 		&services.ProjectsParams{},
 	)
 	if err != nil {
@@ -62,7 +62,7 @@ func (AzureController) getProjectsList(ctx *gin.Context) {
 // @Failure 400 {object} httputil.HTTPError "When user has not provided projectId parameter"
 // @Failure 500 {object} httputil.HTTPError "When failed to receive data from Azure"
 // @Router /v1/azure/teams/list [get]
-func (AzureController) getProjectTeams(ctx *gin.Context) {
+func (c *AzureController) getProjectTeams(ctx *gin.Context) {
 	projectId := ctx.Query("projectId")
 
 	if projectId == "" {
@@ -70,7 +70,7 @@ func (AzureController) getProjectTeams(ctx *gin.Context) {
 		return
 	}
 
-	projectTeams, _, err := client.Projects.ProjectTeams(
+	projectTeams, _, err := c.client.Projects.ProjectTeams(
 		&services.ProjectTeamsParams{ProjectId: projectId},
 	)
 
@@ -92,7 +92,7 @@ func (AzureController) getProjectTeams(ctx *gin.Context) {
 // @Failure 400 {object} httputil.HTTPError "When user has not provided projectId or teamId parameters"
 // @Failure 500 {object} httputil.HTTPError "When failed to receive data from Azure"
 // @Router /v1/azure/teams/members/list [get]
-func (AzureController) getTeamMembers(ctx *gin.Context) {
+func (c *AzureController) getTeamMembers(ctx *gin.Context) {
 	projectId := ctx.Query("projectId")
 	teamId := ctx.Query("teamId")
 
@@ -101,7 +101,7 @@ func (AzureController) getTeamMembers(ctx *gin.Context) {
 		return
 	}
 
-	teamMembers, _, err := client.Teams.TeamMembers(
+	teamMembers, _, err := c.client.Teams.TeamMembers(
 		&services.TeamMembersParams{ProjectId: projectId,
 			TeamId: teamId},
 	)
@@ -124,7 +124,7 @@ func (AzureController) getTeamMembers(ctx *gin.Context) {
 // @Failure 400 {object} httputil.HTTPError "When user has not provided projectId or teamId parameters"
 // @Failure 500 {object} httputil.HTTPError "When failed to receive data from Azure"
 // @Router /v1/azure/teams/iterations/list [get]
-func (AzureController) getTeamIterations(ctx *gin.Context) {
+func (c *AzureController) getTeamIterations(ctx *gin.Context) {
 	projectId := ctx.Query("projectId")
 	teamId := ctx.Query("teamId")
 
@@ -133,7 +133,7 @@ func (AzureController) getTeamIterations(ctx *gin.Context) {
 		return
 	}
 
-	teamIterations, _, err := client.Teams.TeamIterations(
+	teamIterations, _, err := c.client.Teams.TeamIterations(
 		&services.TeamIterationsParams{ProjectId: projectId,
 			TeamId: teamId},
 	)
@@ -157,7 +157,7 @@ func (AzureController) getTeamIterations(ctx *gin.Context) {
 // @Failure 400 {object} httputil.HTTPError "When user has not provided memberId, projectId, teamId, iteration parameters"
 // @Failure 500 {object} httputil.HTTPError "When failed to receive data from Azure"
 // @Router /v1/azure/members/{memberId}/workItems/list [get]
-func (AzureController) getMemberWorkItems(ctx *gin.Context) {
+func (c *AzureController) getMemberWorkItems(ctx *gin.Context) {
 	userEmail := ctx.Param("memberId")
 	projectId := ctx.Query("projectId")
 	teamId := ctx.Query("teamId")
@@ -168,8 +168,9 @@ func (AzureController) getMemberWorkItems(ctx *gin.Context) {
 		return
 	}
 
-	workItems, err := client.WorkItems.MemberWorkItems(
-		&services.MemberWorkItemsParams{ProjectId: projectId,
+	workItems, err := c.client.WorkItems.MemberWorkItems(
+		&services.MemberWorkItemsParams{
+			ProjectId: projectId,
 			TeamId:    teamId,
 			Iteration: iteration,
 			UserEmail: userEmail},
