@@ -1,27 +1,50 @@
 package controllers
 
 import (
+	"Databriz-Meetings-API-Go/configs"
 	"Databriz-Meetings-API-Go/db"
 	"Databriz-Meetings-API-Go/httputil"
+	"Databriz-Meetings-API-Go/models"
+	"Databriz-Meetings-API-Go/repository"
+	"Databriz-Meetings-API-Go/services"
 	"Databriz-Meetings-API-Go/utils"
 	"github.com/gin-gonic/gin"
+	"github.com/spf13/viper"
 	"net/http"
 )
 
-type WebController struct{}
+type WebController struct {
+	client   *services.AzureClient
+	userRepo repository.UserRepository
+}
 
 type isDataActualResponse struct {
 	ShouldUpdate bool `json:"should_update"`
 	Revision     int  `json:"revision"`
 }
 
+type dataResponse struct {
+	UserName      string             `json:"user_name"`
+	UserEmail     string             `json:"user_email"`
+	UserWorkItems *[]models.WorkItem `json:"user_work_items"`
+}
+
 func NewWebController() *WebController {
-	return &WebController{}
+	client := services.NewAzureClient(
+		viper.GetString(configs.AzureToken),
+		viper.GetString(configs.AzureOrganization),
+	)
+	userRepository := repository.NewUserRepository(db.GetDB())
+
+	return &WebController{
+		client:   client,
+		userRepo: userRepository,
+	}
 }
 
 func (c *WebController) RegisterRoutes(router *gin.RouterGroup) {
 	router.GET("data/revision/isActual", c.isDataActual)
-	//router.GET("data/get", c.getActualData)
+	router.GET("data/get", c.getActualData)
 }
 
 // @Summary Проверка актуальности данных на фронте
@@ -32,7 +55,7 @@ func (c *WebController) RegisterRoutes(router *gin.RouterGroup) {
 // @Success 200 {object} isDataActualResponse
 // @Failure 400 {object} httputil.HTTPError "When user has provided wrong query param"
 // @Router /v1/web/data/revision/isActual [get]
-func (WebController) isDataActual(ctx *gin.Context) {
+func (c *WebController) isDataActual(ctx *gin.Context) {
 	revision := ctx.Query("revision")
 
 	if revision == "" {
@@ -53,6 +76,38 @@ func (WebController) isDataActual(ctx *gin.Context) {
 	})
 }
 
-//func (WebController) getActualData(ctx *gin.Context) {
-//
-//}
+// @Summary Актуальные данные
+// @Description Возвращает список работ выбранного пользователя
+// @Tags Web
+// @Produce json
+// @Success 200 {object} dataResponse
+// @Failure 400 {object} httputil.HTTPError "When nothing was selected from mobile app"
+// @Router /v1/web/data/get [get]
+func (c *WebController) getActualData(ctx *gin.Context) {
+	request := db.GetMemoryStorage().GetData()
+
+	if request == nil {
+		httputil.NewError(ctx, http.StatusBadRequest, "You must send data from mobile app before calling this method")
+		return
+	}
+
+	workItems, err := c.client.WorkItems.MemberWorkItems(
+		&services.MemberWorkItemsParams{
+			ProjectId: request.ProjectId,
+			TeamId:    request.TeamId,
+			Iteration: request.IterationPath,
+			UserEmail: request.UserEmail},
+	)
+
+	if err != nil {
+		httputil.NewInternalAzureError(ctx, err)
+		return
+	}
+
+	userEntity := c.userRepo.GetByEmail(request.UserEmail)
+	ctx.JSON(http.StatusOK, dataResponse{
+		UserName:      userEntity.Name,
+		UserEmail:     userEntity.Email,
+		UserWorkItems: models.FromAzureWorkItems(workItems),
+	})
+}

@@ -6,7 +6,7 @@ import (
 
 type memoryStorage struct {
 	dataRevision int
-	request      models.ShowRequestBody
+	request      *models.ShowRequestBody
 }
 
 var storage memoryStorage
@@ -29,9 +29,9 @@ func (storage *memoryStorage) ShouldUpdate(localRevision int) bool {
 
 func (storage *memoryStorage) StoreData(body models.ShowRequestBody) {
 	storage.dataRevision++
-	storage.request = body
+	storage.request = &body
 }
 
 func (storage *memoryStorage) GetData() *models.ShowRequestBody {
-	return &storage.request
+	return storage.request
 }

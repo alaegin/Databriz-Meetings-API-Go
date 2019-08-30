@@ -269,6 +269,32 @@
                 }
             }
         },
+        "/v1/web/data/get": {
+            "get": {
+                "description": "Возвращает список работ выбранного пользователя",
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Web"
+                ],
+                "summary": "Актуальные данные",
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/dataResponse"
+                        }
+                    },
+                    "400": {
+                        "description": "When nothing was selected from mobile app",
+                        "schema": {
+                            "$ref": "#/definitions/httputil.HTTPError"
+                        }
+                    }
+                }
+            }
+        },
         "/v1/web/data/revision/isActual": {
             "get": {
                 "description": "Возвращает актуальную версию данных и флаг необходимости обновления",

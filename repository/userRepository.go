@@ -8,7 +8,7 @@ import (
 
 type UserRepository interface {
 	CreateUsers(members []azure.Member)
-	GetByEmail() *entities.UserEntity
+	GetByEmail(email string) *entities.UserEntity
 }
 
 type userRepository struct {
@@ -31,6 +31,9 @@ func (u *userRepository) CreateUsers(members []azure.Member) {
 	tx.Commit()
 }
 
-func (u *userRepository) GetByEmail() *entities.UserEntity {
-	panic("implement me") // TODO
+func (u *userRepository) GetByEmail(email string) *entities.UserEntity {
+	userEntity := entities.UserEntity{}
+	u.Db.Where(entities.UserEntity{Email: email}).First(&userEntity)
+
+	return &userEntity
 }
