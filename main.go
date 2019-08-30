@@ -3,6 +3,7 @@ package main
 import (
 	"Databriz-Meetings-API-Go/configs"
 	"Databriz-Meetings-API-Go/controllers"
+	"Databriz-Meetings-API-Go/db"
 	"fmt"
 	"github.com/gin-contrib/cors"
 	"github.com/gin-gonic/gin"
@@ -19,7 +20,7 @@ import (
 // @Version 0.1
 func main() {
 	configs.LoadConfig()
-	//db.InitDatabase()
+	db.InitDatabase()
 	configureRoutes()
 }
 

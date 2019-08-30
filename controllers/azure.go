@@ -2,8 +2,10 @@ package controllers
 
 import (
 	"Databriz-Meetings-API-Go/configs"
+	"Databriz-Meetings-API-Go/db"
 	"Databriz-Meetings-API-Go/httputil"
 	"Databriz-Meetings-API-Go/models"
+	"Databriz-Meetings-API-Go/repository"
 	"Databriz-Meetings-API-Go/services"
 	"github.com/gin-gonic/gin"
 	"github.com/spf13/viper"
@@ -11,7 +13,8 @@ import (
 )
 
 type AzureController struct {
-	client *services.AzureClient
+	client   *services.AzureClient
+	userRepo repository.UserRepository
 }
 
 func NewAzureController() *AzureController {
@@ -19,8 +22,11 @@ func NewAzureController() *AzureController {
 		viper.GetString(configs.AzureToken),
 		viper.GetString(configs.AzureOrganization),
 	)
+	userRepository := repository.NewUserRepository(db.GetDB())
+
 	return &AzureController{
-		client: client,
+		client:   client,
+		userRepo: userRepository,
 	}
 }
 
@@ -111,6 +117,7 @@ func (c *AzureController) getTeamMembers(ctx *gin.Context) {
 		return
 	}
 
+	c.userRepo.CreateUsers(teamMembers.Members)
 	ctx.JSON(http.StatusOK, models.FromAzureMembersList(teamMembers))
 }
 

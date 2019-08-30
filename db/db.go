@@ -2,6 +2,7 @@ package db
 
 import (
 	"Databriz-Meetings-API-Go/configs"
+	"Databriz-Meetings-API-Go/db/entities"
 	"github.com/jinzhu/gorm"
 	"github.com/spf13/viper"
 	"log"
@@ -10,10 +11,11 @@ import (
 
 	_ "github.com/go-sql-driver/mysql"
 	_ "github.com/jinzhu/gorm/dialects/mysql"
+	//_ "github.com/jinzhu/gorm/dialects/sqlite"
 )
 
 const (
-	dbConnectionUrl string = "{login}:{password}@tcp({host}:{port})/{table}?charset=utf8&parseTime=True&loc=Local"
+	dbConnectionUrl string = "{login}:{password}@tcp({host}:{port})/{table}?charset=utf8&collation=utf8mb4_general_ci&parseTime=True&loc=Local"
 )
 
 var db *gorm.DB
@@ -46,7 +48,7 @@ func InitDatabase() {
 
 	//
 	db = conn
-	//db.Debug().AutoMigrate(&entities.UserEntity{})
+	db.Debug().AutoMigrate(&entities.UserEntity{})
 }
 
 func GetDB() *gorm.DB {
