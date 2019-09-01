@@ -2,10 +2,11 @@ package db
 
 import (
 	"Databriz-Meetings-API-Go/models"
+	"sync/atomic"
 )
 
 type MemoryStorage struct {
-	dataRevision int
+	dataRevision int64
 	request      *models.ShowRequestBody
 }
 
@@ -19,19 +20,19 @@ func GetMemoryStorage() *MemoryStorage {
 	return &storage
 }
 
-func (storage *MemoryStorage) GetDataRevision() int {
-	return storage.dataRevision
+func (s *MemoryStorage) GetDataRevision() int64 {
+	return s.dataRevision
 }
 
-func (storage *MemoryStorage) ShouldUpdate(localRevision int) bool {
-	return storage.dataRevision > localRevision
+func (s *MemoryStorage) ShouldUpdate(localRevision int64) bool {
+	return s.dataRevision > localRevision
 }
 
-func (storage *MemoryStorage) StoreData(body models.ShowRequestBody) {
-	storage.dataRevision++
-	storage.request = &body
+func (s *MemoryStorage) StoreData(body models.ShowRequestBody) {
+	atomic.AddInt64(&s.dataRevision, 1)
+	s.request = &body
 }
 
-func (storage *MemoryStorage) GetData() *models.ShowRequestBody {
-	return storage.request
+func (s *MemoryStorage) GetData() *models.ShowRequestBody {
+	return s.request
 }

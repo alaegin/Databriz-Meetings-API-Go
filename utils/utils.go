@@ -4,6 +4,6 @@ import (
 	"strconv"
 )
 
-func StringToInt(str string) (int, error) {
-	return strconv.Atoi(str)
+func StringToInt64(str string) (int64, error) {
+	return strconv.ParseInt(str, 10, 64)
 }

@@ -20,8 +20,8 @@ type WebController struct {
 }
 
 type isDataActualResponse struct {
-	ShouldUpdate bool `json:"should_update"`
-	Revision     int  `json:"revision"`
+	ShouldUpdate bool  `json:"should_update"`
+	Revision     int64 `json:"revision"`
 }
 
 type dataResponse struct {
@@ -66,7 +66,7 @@ func (c *WebController) isDataActual(ctx *gin.Context) {
 		return
 	}
 
-	frontendRevision, err := utils.StringToInt(revision)
+	frontendRevision, err := utils.StringToInt64(revision)
 	if err != nil {
 		httputil.NewError(ctx, http.StatusBadRequest, "revision param must be int")
 		return
