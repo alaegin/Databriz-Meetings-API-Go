@@ -14,8 +14,9 @@ import (
 )
 
 type WebController struct {
-	client   *services.AzureClient
-	userRepo repository.UserRepository
+	client     *services.AzureClient
+	memStorage *db.MemoryStorage
+	userRepo   repository.UserRepository
 }
 
 type isDataActualResponse struct {
@@ -34,11 +35,13 @@ func NewWebController() *WebController {
 		viper.GetString(configs.AzureToken),
 		viper.GetString(configs.AzureOrganization),
 	)
+	memoryStorage := db.GetMemoryStorage()
 	userRepository := repository.NewUserRepository(db.GetDB())
 
 	return &WebController{
-		client:   client,
-		userRepo: userRepository,
+		client:     client,
+		memStorage: memoryStorage,
+		userRepo:   userRepository,
 	}
 }
 
@@ -68,11 +71,10 @@ func (c *WebController) isDataActual(ctx *gin.Context) {
 		httputil.NewError(ctx, http.StatusBadRequest, "revision param must be int")
 		return
 	}
-	storage := db.GetMemoryStorage()
 
 	ctx.JSON(http.StatusOK, isDataActualResponse{
-		ShouldUpdate: storage.ShouldUpdate(frontendRevision),
-		Revision:     storage.GetDataRevision(),
+		ShouldUpdate: c.memStorage.ShouldUpdate(frontendRevision),
+		Revision:     c.memStorage.GetDataRevision(),
 	})
 }
 
@@ -84,7 +86,7 @@ func (c *WebController) isDataActual(ctx *gin.Context) {
 // @Failure 400 {object} httputil.HTTPError "When nothing was selected from mobile app"
 // @Router /v1/web/data/get [get]
 func (c *WebController) getActualData(ctx *gin.Context) {
-	request := db.GetMemoryStorage().GetData()
+	request := c.memStorage.GetData()
 
 	if request == nil {
 		httputil.NewError(ctx, http.StatusBadRequest, "You must send data from mobile app before calling this method")

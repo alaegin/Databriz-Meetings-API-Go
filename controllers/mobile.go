@@ -9,10 +9,16 @@ import (
 	"net/http"
 )
 
-type MobileController struct{}
+type MobileController struct {
+	memStorage *db.MemoryStorage
+}
 
 func NewMobileController() *MobileController {
-	return &MobileController{}
+	memoryStorage := db.GetMemoryStorage()
+
+	return &MobileController{
+		memStorage: memoryStorage,
+	}
 }
 
 func (c *MobileController) RegisterRoutes(router *gin.RouterGroup) {
@@ -26,7 +32,7 @@ func (c *MobileController) RegisterRoutes(router *gin.RouterGroup) {
 // @Success 200
 // @Failure 400 {object} httputil.HTTPError "When user has not provided correct request body"
 // @Router /v1/mobile/control/show [post]
-func (MobileController) showMemberWorkItems(ctx *gin.Context) {
+func (c *MobileController) showMemberWorkItems(ctx *gin.Context) {
 	var requestBody models.ShowRequestBody
 	if err := ctx.BindJSON(&requestBody); err != nil {
 		log.Println(err.Error())
@@ -34,7 +40,7 @@ func (MobileController) showMemberWorkItems(ctx *gin.Context) {
 		return
 	}
 
-	db.GetMemoryStorage().StoreData(requestBody)
+	c.memStorage.StoreData(requestBody)
 
 	ctx.JSON(http.StatusOK, struct {
 		Status string `json:"status"`
