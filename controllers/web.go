@@ -111,7 +111,7 @@ func (c *WebController) getActualData(ctx *gin.Context) {
 	ctx.JSON(http.StatusOK, dataResponse{
 		UserName:      userEntity.Name,
 		UserEmail:     userEntity.Email,
-		UserAvatarUrl: userEntity.Avatar,
+		UserAvatarUrl: userEntity.Avatar + "?size=2",
 		UserWorkItems: models.FromAzureWorkItems(workItems),
 	})
 }
