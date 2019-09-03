@@ -23,8 +23,9 @@ func (u *userRepository) CreateUsers(members []azure.Member) {
 	tx := u.Db.Begin()
 	for _, user := range members {
 		userEnt := entities.UserEntity{
-			Email: user.Identity.UniqueName,
-			Name:  user.Identity.DisplayName,
+			Email:  user.Identity.UniqueName,
+			Name:   user.Identity.DisplayName,
+			Avatar: user.Identity.ImageURL,
 		}
 		tx.Where(entities.UserEntity{Email: userEnt.Email}).Assign(userEnt).FirstOrCreate(&userEnt)
 	}

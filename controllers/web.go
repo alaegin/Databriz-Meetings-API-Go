@@ -27,6 +27,7 @@ type isDataActualResponse struct {
 type dataResponse struct {
 	UserName      string             `json:"user_name"`
 	UserEmail     string             `json:"user_email"`
+	UserAvatarUrl string             `json:"user_avatar_url"`
 	UserWorkItems *[]models.WorkItem `json:"user_work_items"`
 }
 
@@ -110,6 +111,7 @@ func (c *WebController) getActualData(ctx *gin.Context) {
 	ctx.JSON(http.StatusOK, dataResponse{
 		UserName:      userEntity.Name,
 		UserEmail:     userEntity.Email,
+		UserAvatarUrl: userEntity.Avatar,
 		UserWorkItems: models.FromAzureWorkItems(workItems),
 	})
 }
