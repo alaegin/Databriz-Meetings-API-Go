@@ -180,7 +180,8 @@ func (c *AzureController) getMemberWorkItems(ctx *gin.Context) {
 			ProjectId: projectId,
 			TeamId:    teamId,
 			Iteration: iteration,
-			UserEmail: userEmail},
+			UserEmail: userEmail,
+		},
 	)
 
 	if err != nil {
