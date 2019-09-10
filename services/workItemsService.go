@@ -50,6 +50,11 @@ func (s *WorkItemsService) MemberWorkItems(params *MemberWorkItemsParams) (*azur
 		return nil, err
 	}
 
+	// Return empty slice if no work items found for member
+	if len(workItemsList.ShortWorkItems) == 0 {
+		return new(azure.WorkItemsList), nil
+	}
+
 	workItems, _, err := s.workItemsDescription(workItemIds(workItemsList), params)
 	if err != nil {
 		return nil, err

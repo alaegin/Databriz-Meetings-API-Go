@@ -16,6 +16,7 @@ func NewError(ctx *gin.Context, status int, err string) {
 
 func NewInternalAzureError(ctx *gin.Context, err error) {
 	errStr := err.Error()
+	fmt.Println(fmt.Sprintf("Error occurred = %s", errStr))
 	NewError(ctx, http.StatusInternalServerError, fmt.Sprintf("Error while requesting data from Azure. %s", errStr))
 }
 
